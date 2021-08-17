@@ -29,10 +29,6 @@ with st.sidebar:
 #----------------------------------------------------------------------------------------------------------------
 st.markdown("## Competitor's Base Cost - Tiers")
 ct1, ct2, ct3 = st.columns([1,1,1])
-with ct1:
-    st.markdown("### Tier 1")
-    os_subscription_1 = st.slider("Subscription price (bed/month)", 10.0, 70.0, 40.0, 0.25, format="$%f")
-
 with ct2:
     st.markdown("### Tier 2")    
     os_subscription_2 = st.slider("Subscription price (bed/month)", 10.0, 70.0, 30.0, 0.25, format="$%f")
@@ -42,6 +38,10 @@ with ct3:
     st.markdown("### Tier 3")  
     os_subscription_3 = st.slider("Subscription price (bed/month)", 10.0, 70.0, 20.0, 0.25, format="$%f")
     num_facs_start_tier_3 = st.slider("Starts at facility #", 1, 220, 201)     
+    
+with ct1:
+    st.markdown("### Tier 1")
+    os_subscription_1 = st.slider("Subscription price (bed/month)", 10.0, 70.0, 40.0, 0.25, format="$%f", help = f"VH Tiers are 'retroactive' in that all subscribed beds across facilities receive the the new tier price.  It is unlikely that Competitor applies tiers this way because (at the current settings) their monthly charges will drop ${(os_subscription_2-os_subscription_3)*num_facs_start_tier_3*adc:,.0f} when facility {num_facs_start_tier_3} goes live.")
 
 # Tiers for competitor
 #----------------------
@@ -125,7 +125,8 @@ st.markdown("## Additional Costs from Wearables")
 bc1, _, bc2 = st.columns([3,1,3])
 with bc1:
     st.markdown("### Bands")    
-    band_cost = st.slider("Cost of a single band", 0.25, 25.0, 3.0, 0.25, format="$%f")
+    band_cost = st.slider("Cost of a single band", 0.25, 25.0, 3.0, 0.25, format="$%f",help="Bands are at best, single use. Sometimes more than 1 band might be needed for a patient during their treatment. This 'small' expense can add up quickly with volume.  Competitor has had customers churn after the initial contract term b/c of sticker shock of the consumables.")
+
     # single_use = st.checkbox("Single use?", True)
     # if not single_use:
     #     num_days_band_replace = st.slider("Average number of days to replace a band", 5, 365, 30)
@@ -137,8 +138,8 @@ with bc1:
 with bc2:
     st.markdown("### Beacons")       
     beacon_cost = st.slider("Cost of a single beacon", 1.0, 100.0, 30.0, 0.5, format="$%f")
-    num_months_beacon_life = st.slider("Average number of months until beacon replacement (usually due to battery)", 1, 60, 10)        
-    loss_rate_per_month_beacons = st.slider("Average percent of beacons lost per month", 0, 50, 0, format="%f")  
+    num_months_beacon_life = st.slider("Average number of months until beacon replacement (usually due to battery)", 1, 60, 10, help="VisibleHand replaces all non-working beacons for free.")        
+    loss_rate_per_month_beacons = st.slider("Average percent of beacons lost per month", 0, 50, 0, format="%f", help="Beacons have a large 'unplanned cost' potential if not managed well. We created a 'beacon tracker' module to help facilities better manage their loss rate to reduce costs.  In our experience, the loss rate is 10-30% depending on the facility's process control.")  
 
     beacon_cost_per_bed = (1-(loss_rate_per_month_beacons/100)) ** num_months_beacon_life * (beacon_cost / num_months_beacon_life) + (beacon_cost * (loss_rate_per_month_beacons/100))
     vh_addn_beacon_cost_per_bed = loss_rate_per_month_beacons/100 * 25
@@ -192,15 +193,15 @@ with dc1:
     st.markdown("### Beds : Device Ratio")
     beds_to_device_ratio = st.slider("Ratio of number of beds per device", 3, 20, 5, format="%d")
     st.markdown("### Connectivity")
-    cellular_cost_per_phone_per_month = st.slider("Average Celluar Data cost, per device, per month", 0, 40, 18, format="$%f")
+    cellular_cost_per_phone_per_month = st.slider("Average Celluar Data cost, per device, per month", 0, 40, 18, format="$%f", help="If set to $0 due to Wifi plans, note that Wifi carries additional IT and support costs b/c it tends to fail more and connectivity issues are much harder to diagnose (and rule out) with wifi than with cellular.")
     cellular_cost_per_bed = cellular_cost_per_phone_per_month / beds_to_device_ratio
     st.write(f"Additional per bed cost = ${cellular_cost_per_bed:.2f}")
 
 with dc2:
     st.markdown("### Management & Support")    
     mdm_software_cost_per_phone_per_year = st.slider("MDM software cost, per device, per year", 10, 25, 16)
-    num_devices_per_fte = st.slider("Number of devices a single FTE can fully support", 100, 1000, 300, 25)
-    salary_fte = st.slider("'Fully loaded' salary for new IT FTE", 50000, 150000, 90000, 5000, format="$%f")
+    num_devices_per_fte = st.slider("Number of devices a single FTE can fully support", 100, 1000, 300, 25, help = "Note: Lower if planning to use WiFi (see connectivity note).  \nAs a mobile application, success is inextricably linked with device performance, maintainence, security, and uptime. Offering device management (alongside connectivity & software) allows us to optimize the full scope of delivery a successful launch & long-term reliability.")
+    salary_fte = st.slider("'Fully loaded' salary for new IT FTE", 50000, 150000, 90000, 5000, format="$%f", help = "Note: mid-level IT hire.  \nVH remotely manages all devices included in the subscription cost... this includes lockdown, GPS tracking & geofence alerts, software/phone updating, remote shutdown, SIM management, connection management, broadcating management alerts to the phones, etc...  All of these functions will be the responsibility of UHS if OS is used.")
     mdm_cost_per_bed = mdm_software_cost_per_phone_per_year/(12 * beds_to_device_ratio) + (salary_fte / 12) / (beds_to_device_ratio * num_devices_per_fte)
     st.write(f"Additional per bed cost = ${mdm_cost_per_bed:.2f}")
 
