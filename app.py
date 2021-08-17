@@ -240,11 +240,13 @@ with ccc1:
     st.write("Bands", round(band_cost * num_beds))
     st.write("Wearables", round(beacon_cost * num_beds))
     st.write("Devices", round(num_beds / beds_to_device_ratio * 430))
-    st.write("Install ???")
-    st.write(" ")
-    total_comp = round(band_cost * num_beds) + round(beacon_cost * num_beds) + round(num_beds / beds_to_device_ratio * 430)
+    install_cost = st.number_input("Install Cost", 0)
+    st.write("--")
+    total_comp = round(band_cost * num_beds) + round(beacon_cost * num_beds) + round(num_beds / beds_to_device_ratio * 430) + round(install_cost * num_facs)
     st.write("Total", total_comp)
     st.write("Additional = ", total_comp - total_vh)
+    st.write("Not included in summary, but amortized over 1 year, per bed per month")
+    st.write("--> +", round((total_comp - total_vh)/ adc / 12 / num_facs, 2))
 
 with ccc2:
     st.markdown("### VisibleHand")    
@@ -253,20 +255,22 @@ with ccc2:
     st.write("Devices", round(num_beds / beds_to_device_ratio * 275))
     st.write("Install", 0)
     st.write(" ")
+    st.write(" ")
+    st.write(" ")
+    st.write("--")
     st.write("Total", total_vh)
 
 
 
 with st.sidebar:
-    # fig_summary = px.bar(x=["VH", "Competitor"], y=[avg_sub_cost_vh_with_wearables, avg_sub_cost_comp_with_devices], color=['Gray', 'purple'], title="Average Price per bed per month", width=330) 
     comp_wearables_cost = avg_sub_cost_comp_with_wearables - avg_sub_cost_comp
     comp_devices_cost = avg_sub_cost_comp_with_devices - avg_sub_cost_comp_with_wearables
     vh_wearables_cost = avg_sub_cost_vh_with_wearables - avg_sub_cost_vh
-    companies = ['VH', 'Competitor']
+    companies = ['Competitor', 'VH']
     fig_summary = go.Figure(data=[
-        go.Bar(name='Base', x=companies, y=[avg_sub_cost_vh, avg_sub_cost_comp]),
-        go.Bar(name='Wearables', x=companies, y=[vh_wearables_cost, comp_wearables_cost]),
-        go.Bar(name='Devices', x=companies, y=[0, comp_devices_cost], text=[avg_sub_cost_vh_with_wearables, avg_sub_cost_comp_with_devices])
+        go.Bar(name='Base', x=companies, y=[avg_sub_cost_comp, avg_sub_cost_vh]),
+        go.Bar(name='Wearables', x=companies, y=[comp_wearables_cost, vh_wearables_cost]),
+        go.Bar(name='Devices', x=companies, y=[comp_devices_cost, 0], text=[avg_sub_cost_comp_with_devices, avg_sub_cost_vh_with_wearables])
     ])
     fig_summary.update_layout(barmode='stack')
     fig_summary.update_traces(textposition='outside')
