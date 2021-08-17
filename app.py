@@ -74,13 +74,13 @@ comp_tiers_fig.update_layout(title="Competitor", title_x=0.5,yaxis_title="Cost (
 #----------------------
 num_beds = num_facs * adc
 
-vh_price = 0
+vh_price = 65
 # if num_beds < 251:
 #     vh_price = 58.8
-if num_beds < 10:
-    vh_price = 65
+if num_beds < 100:
+    vh_price = 65.0
 elif num_beds < 250:
-    vh_prcie = 60
+    vh_prcie = 60.0
 elif num_beds < 500:
     vh_price = 57.5
 elif num_beds < 1000:
