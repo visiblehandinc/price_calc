@@ -250,13 +250,12 @@ total_vh = round(num_beds / beds_to_device_ratio * 275)
     
 with ccc1:
     st.markdown("### Competitor")
-    st.text(f"Bands =      ${band_cost * num_beds:,.0f}")
-    st.text(f"Wearables =  ${beacon_cost * num_beds:,.0f}")
+    st.text(f"Beacons =    ${1.3* beacon_cost * num_beds:,.0f}")
     st.text(f"Devices =    ${(num_beds / beds_to_device_ratio) * 430:,.0f}")
     #install_cost = st.number_input("Install Cost", 0)
     install_cost = st.slider("Install Cost", 0, 5000, 1000, 100, format="$%d")
     st.write("--")
-    total_comp = band_cost * num_beds + beacon_cost * num_beds + (num_beds / beds_to_device_ratio) * 430 + install_cost * num_facs
+    total_comp = beacon_cost * num_beds + (num_beds / beds_to_device_ratio) * 430 + install_cost * num_facs
     st.text(f"Total =      ${total_comp:,.0f}")
     st.text(f"Cost Diff =  ${total_comp:,.0f} - ${total_vh:,.0f}")
     st.text(f"Cost Diff =  ${total_comp -total_vh:,.0f}")
@@ -278,8 +277,7 @@ with ccc1:
 
 with ccc3:
     st.markdown("### VisibleHand")
-    st.text(f"Bands =      $0")
-    st.text(f"Wearables =  $0")
+    st.text(f"Beacons =  $0")
     st.text(f"Devices =    ${round(num_beds / beds_to_device_ratio * 275):,.0f}")
     st.text(f"Install =    $0")
     st.text(" ")
