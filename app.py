@@ -196,9 +196,12 @@ with dc1:
     st.markdown("### Beds : Device Ratio")
     beds_to_device_ratio = st.slider("Ratio of number of beds per device", 3, 20, 5, format="%d")
     st.markdown("### Connectivity")
-    cellular_cost_per_phone_per_month = st.slider("Average Celluar Data cost, per device, per month", 0, 40, 18, format="$%f", help="If set to $0 due to Wifi plans, note that Wifi carries additional IT and support costs b/c it tends to fail more and connectivity issues are much harder to diagnose (and rule out) with wifi than with cellular.")
+    cellular_cost_per_phone_per_month = st.slider("Average Celluar Data cost, per device, per month", 0, 40, 18, format="$%f")
     cellular_cost_per_bed = cellular_cost_per_phone_per_month / beds_to_device_ratio
     st.write(f"Additional per bed cost = ${cellular_cost_per_bed:.2f}")
+    
+    if cellular_cost_per_phone_per_month == 0:
+        st.warning("If set to $0 due to Wifi plans, note that Wifi carries additional IT and support costs b/c it tends to fail more and connectivity issues are much harder to diagnose (and rule out) with wifi than with cellular.")
 
 with dc2:
     st.markdown("### Management & Support")    
