@@ -80,7 +80,7 @@ vh_price = 65
 if num_beds < 100:
     vh_price = 65.0
 elif num_beds < 250:
-    vh_prcie = 60.0
+    vh_price = 60.0
 elif num_beds < 500:
     vh_price = 57.5
 elif num_beds < 1000:
