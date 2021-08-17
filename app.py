@@ -64,6 +64,7 @@ comp_tiers_fig = px.line(comp_tiers_chopped_df, x='Facility Count', y='Subscript
 comp_tiers_fig.add_shape(type='line', x0=1, x1=num_facs, y0=avg_sub_cost_comp, y1=avg_sub_cost_comp, line=dict(color="Gray", width=2, dash="dot"))   
 comp_tiers_fig.add_annotation(x=num_facs / 2, y=avg_sub_cost_comp, text=f"Average per bed = ${avg_sub_cost_comp}", showarrow=False, yshift=10, arrowhead=1)  
 comp_tiers_fig.update_yaxes(range=[0,85])
+comp_tiers_fig.update_layout(title="Competitor")
 
 
 # Tiers for VH
@@ -97,6 +98,7 @@ vh_tiers_fig = px.line(vh_tiers_df, x='Facility Count', y='Subscription Cost', w
 vh_tiers_fig.add_shape(type='line', x0=1, x1=num_facs, y0=avg_sub_cost_vh, y1=avg_sub_cost_vh, line=dict(color="Gray", width=2, dash="dot"))
 vh_tiers_fig.add_annotation(x=num_facs / 2  , y=avg_sub_cost_vh, text=f"Average per bed = ${avg_sub_cost_vh}", showarrow=False, yshift=10, arrowhead=1)  
 vh_tiers_fig.update_yaxes(range=[0,85])
+vh_tiers_fig.update_layout(title="VH")
 
 
 # Show the competitor tier figs - we have not added in extra costs yet.
@@ -152,6 +154,7 @@ comp_wearables_fig.add_shape(type='line', x0=1, x1=num_facs, y0=avg_sub_cost_com
 comp_wearables_fig.add_annotation(x=num_facs / 2, y=avg_sub_cost_comp_with_wearables, text=f"Average per bed = ${avg_sub_cost_comp_with_wearables}", showarrow=False, yshift=10, arrowhead=1)  
 comp_wearables_fig.update_yaxes(range=[0,85])
 comp_wearables_fig.add_trace(go.Scatter(y=comp_tiers_chopped_df['Wearables Cost'], x=comp_tiers_chopped_df['Facility Count'], mode='lines', name='additional'))
+comp_wearables_fig.update_layout(title="Competitor")
 
 avg_sub_cost_vh_with_wearables = round(vh_tiers_df['Wearables Cost'].mean(), 2)
 vh_wearables_fig = px.line(vh_tiers_df, x='Facility Count', y='Subscription Cost', width=600, height=300)
@@ -159,6 +162,7 @@ vh_wearables_fig.add_shape(type='line', x0=1, x1=num_facs, y0=avg_sub_cost_vh_wi
 vh_wearables_fig.add_annotation(x=num_facs / 2  , y=avg_sub_cost_vh_with_wearables, text=f"Average per bed = ${avg_sub_cost_vh_with_wearables}", showarrow=False, yshift=10, arrowhead=1)  
 vh_wearables_fig.update_yaxes(range=[0,85])
 vh_wearables_fig.add_trace(go.Scatter(y=vh_tiers_df['Wearables Cost'], x=vh_tiers_df['Facility Count'], mode='lines', name='additional'))
+vh_wearables_fig.update_layout(title="VH")
 
 cc1, cc2 = st.columns(2)
 with cc1:
@@ -204,6 +208,7 @@ comp_devices_fig.add_shape(type='line', x0=1, x1=num_facs, y0=avg_sub_cost_comp_
 comp_devices_fig.add_annotation(x=num_facs / 2, y=avg_sub_cost_comp_with_devices, text=f"Average per bed = ${avg_sub_cost_comp_with_devices}", showarrow=False, yshift=10, arrowhead=1)  
 comp_devices_fig.update_yaxes(range=[0,85])
 comp_devices_fig.add_trace(go.Scatter(y=comp_tiers_chopped_df['Devices Cost'], x=comp_tiers_chopped_df['Facility Count'], mode='lines', name='additional'))
+comp_devices_fig.update_layout(title="Competitor")
 
 
 ccc1, ccc2 = st.columns(2)
