@@ -12,6 +12,9 @@ st.set_page_config(
 st.title("True Price Calculator")
 st.write(" ")
 
+# Hide toolbars for charts
+config={'displayModeBar': False}
+
 #----------------------------------------------------------------------------------------------------------------
 # Sidebar - Facility Info & Summary Cost per bed
 #----------------------------------------------------------------------------------------------------------------
@@ -111,9 +114,9 @@ vh_tiers_fig.update_layout(title="VisibleHand",title_x=0.5,yaxis_title="Cost (pe
 # Show the competitor tier figs - we have not added in extra costs yet.
 c1, c2 = st.columns(2)
 with c1:
-    st.plotly_chart(comp_tiers_fig, displayModeBar = False)
+    st.plotly_chart(comp_tiers_fig, config=config)
 with c2:
-    st.plotly_chart(vh_tiers_fig)
+    st.plotly_chart(vh_tiers_fig, config=config)
 
 st.markdown("------")
 
@@ -175,9 +178,9 @@ vh_wearables_fig.update_layout(legend=dict( orientation="h", yanchor="bottom", y
 
 cc1, cc2 = st.columns(2)
 with cc1:
-    st.plotly_chart(comp_wearables_fig)
+    st.plotly_chart(comp_wearables_fig, config=config)
 with cc2:
-    st.plotly_chart(vh_wearables_fig)
+    st.plotly_chart(vh_wearables_fig, config=config)
 
 st.markdown("------")
 
@@ -222,9 +225,9 @@ comp_devices_fig.update_layout(legend=dict( orientation="h", yanchor="bottom", y
 
 ccc1, ccc2 = st.columns(2)
 with ccc1:
-    st.plotly_chart(comp_devices_fig)
+    st.plotly_chart(comp_devices_fig, config=config)
 with ccc2:
-    st.plotly_chart(vh_wearables_fig)
+    st.plotly_chart(vh_wearables_fig, config=config)
 
 st.markdown("------")
 
@@ -232,21 +235,9 @@ st.markdown("------")
 
 st.markdown("## One-Time Costs")
 
-ccc1, ccc2, ccc3, cc4 = st.columns(4)
+ccc1, _, ccc3 = st.columns([2,1,2])
 
 total_vh = round(num_beds / beds_to_device_ratio * 275)
-# with ccc1:
-#     st.markdown("### Competitor")
-#     st.write("Bands", round(band_cost * num_beds))
-#     st.write("Wearables", round(beacon_cost * num_beds))
-#     st.write("Devices", round(num_beds / beds_to_device_ratio * 430))
-#     install_cost = st.number_input("Install Cost", 200)
-#     st.write("--")
-#     total_comp = round(band_cost * num_beds) + round(beacon_cost * num_beds) + round(num_beds / beds_to_device_ratio * 430) + round(install_cost * num_facs)
-#     st.write("Total", total_comp)
-#     st.write("Additional = ", total_comp - total_vh)
-#     st.write("Not included in summary, but amortized over 1 year, per bed per month")
-#     st.write("--> +", round((total_comp - total_vh)/ adc / 12 / num_facs, 2))
     
 with ccc1:
     st.markdown("### Competitor")
@@ -263,18 +254,6 @@ with ccc1:
     
     st.write(f"One Time Costs, **not included in summary**.  \nAmortized over 1 year:  \nExtra per bed per month = **${(total_comp - total_vh)/(adc * 12 * num_facs):,.2f}**")
    
-# with ccc3:
-#     st.markdown("### VisibleHand")    
-#     st.write("Bands", 0)
-#     st.write("Wearables", 0)
-#     st.write("Devices", round(num_beds / beds_to_device_ratio * 275))
-#     st.write("Install", 0)
-#     st.write(" ")
-#     st.write(" ")
-#     st.write(" ")
-#     st.write("--")
-#     st.write("Total", total_vh)
-
 
 with ccc3:
     st.markdown("### VisibleHand")
@@ -307,4 +286,4 @@ with st.sidebar:
     fig_summary.update_yaxes(range=[0,85])
 
     # fig_summary.update_layout(showlegend=False)
-    st.plotly_chart(fig_summary)   
+    st.plotly_chart(fig_summary, config=config)   
