@@ -123,7 +123,7 @@ st.markdown("## Additional Costs from Consumables")
 bc1, _, bc2 = st.columns([3,1,3])
 with bc1:
     st.markdown("### Bands")    
-    band_cost = st.slider("Cost of a single band", 0.25, 25.0, 3.5, 0.25, format="$%f",help="Bands are at best, single use. Sometimes more than 1 band might be needed for a patient during their treatment. This 'small' expense can add up quickly with volume.  Competitor has had customers churn after the initial contract term b/c of sticker shock of the consumables.")
+    band_cost = st.slider("Cost of a single band", 0.25, 25.0, 2.0, 0.25, format="$%f",help="Bands are at best, single use. Sometimes more than 1 band might be needed for a patient during their treatment. This 'small' expense can add up quickly with volume.  Competitor has had customers churn after the initial contract term b/c of sticker shock of the consumables.")
 
     # single_use = st.checkbox("Single use?", True)
     # if not single_use:
@@ -201,7 +201,7 @@ with dc1:
 with dc2:
     st.markdown("### Management & Support")    
     mdm_software_cost_per_phone_per_year = st.slider("MDM software cost, per device, per year", 10, 25, 16)
-    num_devices_per_fte = st.slider("Number of devices a single FTE can fully support", 100, 1000, 300, 25, help = "Note: Lower if planning to use WiFi (see connectivity note).  \nAs a mobile application, success is inextricably linked with device performance, maintainence, security, and uptime. Offering device management (alongside connectivity & software) allows us to optimize the full scope of delivery a successful launch & long-term reliability.")
+    num_devices_per_fte = st.slider("Number of devices a single FTE can fully support", 100, 1000, 500, 25, help = "Note: Lower if planning to use WiFi (see connectivity note).  \nAs a mobile application, success is inextricably linked with device performance, maintainence, security, and uptime. Offering device management (alongside connectivity & software) allows us to optimize the full scope of delivery a successful launch & long-term reliability.")
     salary_fte = st.slider("'Fully loaded' salary for new IT FTE", 50000, 150000, 90000, 5000, format="$%f", help = "Note: mid-level IT hire.  \nVH remotely manages all devices included in the subscription cost... this includes lockdown, GPS tracking & geofence alerts, software/phone updating, remote shutdown, SIM management, connection management, broadcating management alerts to the phones, etc...  All of these functions will be the responsibility of UHS if OS is used.")
     mdm_cost_per_bed = mdm_software_cost_per_phone_per_year/(12 * beds_to_device_ratio) + (salary_fte / 12) / (beds_to_device_ratio * num_devices_per_fte)
     st.write(f"Additional per bed cost = ${mdm_cost_per_bed:.2f}")
