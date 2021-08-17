@@ -193,7 +193,7 @@ with dc1:
     st.markdown("### Beds : Device Ratio")
     beds_to_device_ratio = st.slider("Ratio of number of beds per device", 3, 20, 5, format="%d")
     st.markdown("### Connectivity")
-    cellular_cost_per_phone_per_month = st.slider("Average Celluar Data cost, per device, per month", 0, 40, 18, format="$%f")
+    cellular_cost_per_phone_per_month = st.slider("Average Celluar Data cost, per device, per month", 0, 40, 18, format="$%f", help="Connectivity is the highest risk component of a successful implementation. Relying on local WiFi was our #1 support complaint and often very difficult to resolve. This was the main driver behind our decision to include cellular for our customers. It creates a more reliable system, reduces outages, reduces support, and - bonus - GPS tracking on all devices for better security.")
     cellular_cost_per_bed = cellular_cost_per_phone_per_month / beds_to_device_ratio
     st.write(f"Additional per bed cost = ${cellular_cost_per_bed:.2f}")
     
