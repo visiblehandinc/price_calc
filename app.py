@@ -299,15 +299,16 @@ with st.sidebar:
     fig_summary.update_layout(barmode='stack')
     fig_summary.update_traces(textposition='outside')
     fig_summary.update_layout(uniformtext_minsize=8, uniformtext_mode='hide', width=330)
-    fig_summary.update_layout(title="Average Price / Bed", template='none',title_x=0.5,yaxis_title="Cost (per bed/month)",yaxis_tickprefix = '$')
+    fig_summary.update_layout(title=f"Average Cost per Bed<br>({num_facs} facilities)", template='none',title_x=0.5,yaxis_title="Cost (per bed/month)",yaxis_tickprefix = '$')
     fig_summary.update_yaxes(range=[0,85])
 
     # fig_summary.update_layout(showlegend=False)
     st.plotly_chart(fig_summary)
     
     
-############
-# Do the Cumulative Plot    
+#----------------------------------------------------------------------------------------------------------------
+# Do the cumulative calcs and plot
+#----------------------------------------------------------------------------------------------------------------
 monthDFs = []
 newFacsMonth = round(num_facs/24)
 wearablesCompPerFac = (band_cost_per_bed + beacon_cost_per_bed) * adc  
@@ -325,6 +326,7 @@ print( f"""deviceCompPerFac ${deviceCompPerFac:,.0f},
 for month in range(1,5*12):
     
     # Calc # of beds
+
     facs = min(month * newFacsMonth, num_facs)
     beds = facs * adc
     
@@ -370,7 +372,7 @@ cost['cumVHSavings'] = cost.cumComp - cost.cumVH
 cum_cost_fig = px.line(cost, x='Month', y='cumVHSavings', width=600, height=300)
 cum_cost_fig.add_trace(go.Scatter(y=cost.cumComp, x=cost.Month, mode='lines', name='Competitor Cumulative Cost'))
 cum_cost_fig.add_trace(go.Scatter(y=cost.cumVH, x=cost.Month, mode='lines', name='VH Cumulative Cost'))
-t = f"""Cumulative Savings with VH (2 year rollout of {num_facs} facilities)"""
+t = f"Cumulative Savings with VH<br>(2 year rollout of {num_facs} facilities)"
 cum_cost_fig.update_layout(title=t,title_x=0.5,yaxis_title="$ Savings",yaxis_tickprefix = '$')
 cum_cost_fig.update_layout(legend=dict( orientation="h", yanchor="top", y=1, xanchor="left", x=0))
 
