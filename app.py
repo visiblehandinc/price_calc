@@ -258,7 +258,7 @@ with ccc1:
     st.text(f"Cost Diff =  ${total_comp:,.0f} - ${total_vh:,.0f}")
     st.text(f"Cost Diff =  ${total_comp -total_vh:,.0f}")
     
-    st.write(f"One Time Costs, **not included in summary**.  \nAmortized over 1 year:  \nExtra per bed per month = **${(total_comp - total_vh)/(adc * 12 * num_facs):,.2f}**")
+    st.write(f"One Time Costs  \nAmortized over 1 year  \nExtra per bed per month = **${(total_comp - total_vh)/(adc * 12 * num_facs):,.2f}**  \n**(Note: Excluded from Avg cost per bed)**  ")
    
 # with ccc3:
 #     st.markdown("### VisibleHand")    
