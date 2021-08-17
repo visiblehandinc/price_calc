@@ -56,7 +56,7 @@ comp_fac_prices = comp_fac_prices_1 + comp_fac_prices_2 + comp_fac_prices_3
 
 comp_tiers_df = pd.DataFrame({'Facility Count': fac_nums, 'Subscription Cost': comp_fac_prices})
 # chop off the df based on number of facs being used in the calc
-n = num_facs - 1
+n = num_facs
 comp_tiers_chopped_df = comp_tiers_df.iloc[0:n]
 avg_sub_cost_comp = round(comp_tiers_chopped_df['Subscription Cost'].mean(), 2)
 
@@ -71,16 +71,23 @@ comp_tiers_fig.update_layout(title="Competitor")
 #----------------------
 num_beds = num_facs * adc
 
-vh_bed_prices_1 = [58.5] * 250
-vh_bed_prices_2 = [57.5] * 250
-vh_bed_prices_3 = [55] * 500
-vh_bed_prices_4 = [52.5] * 1500
-vh_bed_prices_5 = [50] * 2500
-vh_bed_prices_6 = [47.5] * 5000
-vh_bed_prices_7 = [45] * 10000
-vh_bed_prices = vh_bed_prices_1 + vh_bed_prices_1 + vh_bed_prices_3 + vh_bed_prices_4 + vh_bed_prices_5 + vh_bed_prices_6 + vh_bed_prices_7
-# chop off ones that are not being used
-vh_bed_prices = vh_bed_prices[0:num_beds]
+vh_price = 0
+if num_beds < 251:
+    vh_price = 58.8
+elif num_beds < 501:
+    vh_price = 57.5
+elif num_beds < 1001:
+    vh_price = 55
+elif num_beds < 2501:
+    vh_price = 52.5
+elif num_beds < 5001:
+    vh_price = 50.0
+elif num_beds < 10001:
+    vh_price = 45.0
+else:
+    vh_price = 45.0
+
+vh_bed_prices = [vh_price] * num_beds    
 
 fac_num_list = []
 for i in range(num_facs):
@@ -98,13 +105,13 @@ vh_tiers_fig = px.line(vh_tiers_df, x='Facility Count', y='Subscription Cost', w
 vh_tiers_fig.add_shape(type='line', x0=1, x1=num_facs, y0=avg_sub_cost_vh, y1=avg_sub_cost_vh, line=dict(color="Gray", width=2, dash="dot"))
 vh_tiers_fig.add_annotation(x=num_facs / 2  , y=avg_sub_cost_vh, text=f"Average per bed = ${avg_sub_cost_vh}", showarrow=False, yshift=10, arrowhead=1)  
 vh_tiers_fig.update_yaxes(range=[0,85])
-vh_tiers_fig.update_layout(title="VH")
+vh_tiers_fig.update_layout(title="VisibleHand")
 
 
 # Show the competitor tier figs - we have not added in extra costs yet.
 c1, c2 = st.columns(2)
 with c1:
-    st.plotly_chart(comp_tiers_fig)
+    st.plotly_chart(comp_tiers_fig, displayModeBar = False)
 with c2:
     st.plotly_chart(vh_tiers_fig)
 
@@ -130,8 +137,8 @@ with bc1:
 with bc2:
     st.markdown("### Beacons")       
     beacon_cost = st.slider("Cost of a single beacon", 1.0, 100.0, 30.0, 0.5, format="$%f")
-    num_months_beacon_life = st.slider("Average number of months until beacon fails (due to battery, defects, or other breakage)", 1, 60, 10)        
-    loss_rate_per_month_beacons = st.slider("Average percent of beacons lost per month", 0, 50, 15,format="%f")  
+    num_months_beacon_life = st.slider("Average number of months until beacon replacement (usually due to battery)", 1, 60, 10)        
+    loss_rate_per_month_beacons = st.slider("Average percent of beacons lost per month", 0, 50, 0, format="%f")  
 
     beacon_cost_per_bed = (1-(loss_rate_per_month_beacons/100)) ** num_months_beacon_life * (beacon_cost / num_months_beacon_life) + (beacon_cost * (loss_rate_per_month_beacons/100))
     vh_addn_beacon_cost_per_bed = loss_rate_per_month_beacons/100 * 25
@@ -162,7 +169,7 @@ vh_wearables_fig.add_shape(type='line', x0=1, x1=num_facs, y0=avg_sub_cost_vh_wi
 vh_wearables_fig.add_annotation(x=num_facs / 2  , y=avg_sub_cost_vh_with_wearables, text=f"Average per bed = ${avg_sub_cost_vh_with_wearables}", showarrow=False, yshift=10, arrowhead=1)  
 vh_wearables_fig.update_yaxes(range=[0,85])
 vh_wearables_fig.add_trace(go.Scatter(y=vh_tiers_df['Wearables Cost'], x=vh_tiers_df['Facility Count'], mode='lines', name='additional'))
-vh_wearables_fig.update_layout(title="VH")
+vh_wearables_fig.update_layout(title="VisibleHand")
 
 cc1, cc2 = st.columns(2)
 with cc1:
@@ -189,7 +196,7 @@ with dc1:
 
 with dc2:
     st.markdown("### Management & Support")    
-    mdm_software_cost_per_phone_per_year = st.slider("MDM software cost, per device, per year", 16, 20, 16)
+    mdm_software_cost_per_phone_per_year = st.slider("MDM software cost, per device, per year", 10, 25, 16)
     num_devices_per_fte = st.slider("Number of devices a single FTE can fully support", 100, 1000, 300)
     salary_fte = st.slider("'Fully loaded' salary for new IT FTE", 50000, 150000, 90000, 5000, format="$%f")
     mdm_cost_per_bed = mdm_software_cost_per_phone_per_year/(12 * beds_to_device_ratio) + (salary_fte / 12) / (beds_to_device_ratio * num_devices_per_fte)
@@ -219,6 +226,25 @@ with ccc2:
 
 st.markdown("------")
 
+
+
+st.markdown("## One-Time Costs")
+
+ccc1, ccc2 = st.columns(2)
+
+with ccc1:
+    st.markdown("### Competitor")
+    st.write("Bands")
+    st.write("Wearables")
+    st.write("Devices")
+    st.write("Install ???")
+
+with ccc2:
+    st.markdown("### VisibleHand")    
+    st.write("Bands", 0)
+    st.write("Wearables", 0)
+    st.write("Devices", )
+    st.write("Install", 0)
 
 
 
