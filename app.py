@@ -28,21 +28,22 @@ with st.sidebar:
 #----------------------------------------------------------------------------------------------------------------
 # Tiers
 #----------------------------------------------------------------------------------------------------------------
+iPadCost = 480
 st.markdown("## Competitor's Base Cost - Tiers")
 ct1, ct2, ct3 = st.columns([1,1,1])
 with ct2:
     st.markdown("### Tier 2")    
-    os_subscription_2 = st.slider("Subscription price (bed/month)", 10.0, 70.0, 30.0, 0.25, format="$%f")
+    os_subscription_2 = st.slider("Subscription price (bed/month)", 10.0, 70.0, 35.0, 1.0, format="$%f")
     num_facs_start_tier_2 = st.slider("Starts at facility #", 1, 50, 26)    
 
 with ct3:
     st.markdown("### Tier 3")  
-    os_subscription_3 = st.slider("Subscription price (bed/month)", 10.0, 70.0, 20.0, 0.25, format="$%f")
+    os_subscription_3 = st.slider("Subscription price (bed/month)", 10.0, 70.0, 25.0, 1.0, format="$%f")
     num_facs_start_tier_3 = st.slider("Starts at facility #", 1, 220, 201)     
     
 with ct1:
     st.markdown("### Tier 1")
-    os_subscription_1 = st.slider("Subscription price (bed/month)", 10.0, 70.0, 40.0, 0.25, format="$%f", help = f"VH Tiers are 'retroactive' in that all subscribed beds across facilities receive the the new tier price.  It is unlikely that Competitor applies tiers this way because (at the current settings) their monthly charges will drop ${(os_subscription_2-os_subscription_3)*num_facs_start_tier_3*adc:,.0f} when facility {num_facs_start_tier_3} goes live.")
+    os_subscription_1 = st.slider("Subscription price (bed/month)", 10.0, 70.0, 45.0, 1.0, format="$%f", help = f"VH Tiers are 'retroactive' in that all subscribed beds across facilities receive the the new tier price.  It is unlikely that Competitor applies tiers this way because (at the current settings) their monthly charges will drop ${(os_subscription_2-os_subscription_3)*num_facs_start_tier_3*adc:,.0f} when facility {num_facs_start_tier_3} goes live.")
 
 # Tiers for competitor
 #----------------------
@@ -240,11 +241,11 @@ total_vh = round(num_beds / beds_to_device_ratio * 275)
 with ccc1:
     st.markdown("### Competitor")
     st.text(f"Beacons =    ${1.3* beacon_cost * num_beds:,.0f}")
-    st.text(f"Devices =    ${(num_beds / beds_to_device_ratio) * 445:,.0f}")
+    st.text(f"Devices =    ${(num_beds / beds_to_device_ratio) * iPadCost:,.0f}")
     #install_cost = st.number_input("Install Cost", 0)
     install_cost = st.slider("Install Cost", 0, 5000, 1000, 100, format="$%d")
     st.write("--")
-    total_comp = beacon_cost * num_beds + (num_beds / beds_to_device_ratio) * 445 + install_cost * num_facs
+    total_comp = beacon_cost * num_beds + (num_beds / beds_to_device_ratio) * iPadCost + install_cost * num_facs
     st.text(f"Total =      ${total_comp:,.0f}")
     st.text(f"Cost Diff =  ${total_comp:,.0f} - ${total_vh:,.0f}")
     st.text(f"Cost Diff =  ${total_comp -total_vh:,.0f}")
@@ -291,7 +292,7 @@ monthDFs = []
 newFacsMonth = round(num_facs/24)
 wearablesCompPerFac = (band_cost_per_bed + beacon_cost_per_bed) * adc  
 deviceCompPerFac = (cellular_cost_per_bed + mdm_cost_per_bed ) * adc
-installCompPerFac = beacon_cost * adc + (adc / beds_to_device_ratio) * 430 + install_cost
+installCompPerFac = beacon_cost * adc + (adc / beds_to_device_ratio) * iPadCost + install_cost
 installVH = 275 * adc/beds_to_device_ratio
 
 # print( f"""deviceCompPerFac ${deviceCompPerFac:,.0f},
