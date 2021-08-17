@@ -142,8 +142,8 @@ with bc2:
 
     beacon_cost_per_bed = (1-(loss_rate_per_month_beacons/100)) ** num_months_beacon_life * (beacon_cost / num_months_beacon_life) + (beacon_cost * (loss_rate_per_month_beacons/100))
     vh_addn_beacon_cost_per_bed = loss_rate_per_month_beacons/100 * 25
-    st.write(f"Additional per bed cost (competitor)= ${round(beacon_cost_per_bed, 2)}")
-    st.write(f"Additional per bed cost (VH)= ${round(vh_addn_beacon_cost_per_bed, 2)}")
+    st.write(f"Additional per bed cost (Competitor)= ${beacon_cost_per_bed:.2f}")
+    st.write(f"Additional per bed cost (VH)= ${vh_addn_beacon_cost_per_bed:.2f}")
 
 
 
@@ -194,15 +194,15 @@ with dc1:
     st.markdown("### Connectivity")
     cellular_cost_per_phone_per_month = st.slider("Average Celluar Data cost, per device, per month", 0, 40, 18, format="$%f")
     cellular_cost_per_bed = cellular_cost_per_phone_per_month / beds_to_device_ratio
-    st.write(f"Additional per bed cost = ${cellular_cost_per_bed}")
+    st.write(f"Additional per bed cost = ${cellular_cost_per_bed:.2f}")
 
 with dc2:
     st.markdown("### Management & Support")    
     mdm_software_cost_per_phone_per_year = st.slider("MDM software cost, per device, per year", 10, 25, 16)
-    num_devices_per_fte = st.slider("Number of devices a single FTE can fully support", 100, 1000, 300)
+    num_devices_per_fte = st.slider("Number of devices a single FTE can fully support", 100, 1000, 300, 25)
     salary_fte = st.slider("'Fully loaded' salary for new IT FTE", 50000, 150000, 90000, 5000, format="$%f")
     mdm_cost_per_bed = mdm_software_cost_per_phone_per_year/(12 * beds_to_device_ratio) + (salary_fte / 12) / (beds_to_device_ratio * num_devices_per_fte)
-    st.write(f"Additional per bed cost = ${round(mdm_cost_per_bed, 2)}")
+    st.write(f"Additional per bed cost = ${mdm_cost_per_bed:.2f}")
 
 
 comp_tiers_chopped_df['Devices Cost'] = comp_tiers_chopped_df['Wearables Cost'] + (cellular_cost_per_bed + mdm_cost_per_bed)
@@ -258,7 +258,9 @@ with ccc1:
     st.write("--")
     total_comp = band_cost * num_beds + beacon_cost * num_beds + (num_beds / beds_to_device_ratio) * 430 + install_cost * num_facs
     st.text(f"Total =      ${total_comp:,.0f}")
-    st.text(f"Additional = ${total_comp - total_vh:,.0f}")
+    st.text(f"Cost Diff = (${total_comp:,.0f} - ${total_vh:,.0f})")
+    st.text(f"Cost Diff =  ${total_comp -total_vh:,.0f}")
+    
     st.text(f"One Time Costs, not included in summary.\nAmortized over 1 year...\nExtra per bed per month: ${(total_comp - total_vh)/(adc * 12 * num_facs):,.2f}")
    
 # with ccc3:
@@ -280,10 +282,11 @@ with ccc3:
     st.text(f"Wearables =  $0")
     st.text(f"Devices =    ${round(num_beds / beds_to_device_ratio * 275):,.0f}")
     st.text(f"Install =    $0")
-    st.write(" ")
-    st.write(" ")
-    st.write(" ")
-    st.write("--")
+    st.text(" ")
+    st.text(" ")
+    st.text(" ")
+    st.text(" ")
+    st.text("--")
     st.text(f"Total =      ${total_vh:,.0f}")
 
 
