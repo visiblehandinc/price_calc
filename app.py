@@ -4,12 +4,12 @@ from plotly import graph_objects as go
 import pandas as pd
 
 st.set_page_config(    
-    page_title="Price Calculator",
+    page_title="True Price Calculator",
     layout='wide',
     page_icon="✋"
 )
 
-st.title("Price Calculator")
+st.title("True Price Calculator")
 st.write(" ")
 
 #----------------------------------------------------------------------------------------------------------------
@@ -27,7 +27,7 @@ with st.sidebar:
 #----------------------------------------------------------------------------------------------------------------
 # Tiers
 #----------------------------------------------------------------------------------------------------------------
-st.markdown("## Base Cost - Tiers")
+st.markdown("## Competitor's Base Cost - Tiers")
 ct1, ct2, ct3 = st.columns([1,1,1])
 with ct1:
     st.markdown("### Tier 1")
@@ -64,7 +64,7 @@ comp_tiers_fig = px.line(comp_tiers_chopped_df, x='Facility Count', y='Subscript
 comp_tiers_fig.add_shape(type='line', x0=1, x1=num_facs, y0=avg_sub_cost_comp, y1=avg_sub_cost_comp, line=dict(color="Gray", width=2, dash="dot"))   
 comp_tiers_fig.add_annotation(x=num_facs / 2, y=avg_sub_cost_comp, text=f"Average per bed = ${avg_sub_cost_comp}", showarrow=False, yshift=10, arrowhead=1)  
 comp_tiers_fig.update_yaxes(range=[0,85])
-comp_tiers_fig.update_layout(title="Competitor")
+comp_tiers_fig.update_layout(title="Competitor", title_x=0.5,yaxis_title="Cost (per bed/month)",yaxis_tickprefix = '$')
 
 
 # Tiers for VH
@@ -105,7 +105,7 @@ vh_tiers_fig = px.line(vh_tiers_df, x='Facility Count', y='Subscription Cost', w
 vh_tiers_fig.add_shape(type='line', x0=1, x1=num_facs, y0=avg_sub_cost_vh, y1=avg_sub_cost_vh, line=dict(color="Gray", width=2, dash="dot"))
 vh_tiers_fig.add_annotation(x=num_facs / 2  , y=avg_sub_cost_vh, text=f"Average per bed = ${avg_sub_cost_vh}", showarrow=False, yshift=10, arrowhead=1)  
 vh_tiers_fig.update_yaxes(range=[0,85])
-vh_tiers_fig.update_layout(title="VisibleHand")
+vh_tiers_fig.update_layout(title="VisibleHand",title_x=0.5,yaxis_title="Cost (per bed/month)",yaxis_tickprefix = '$')
 
 
 # Show the competitor tier figs - we have not added in extra costs yet.
@@ -161,7 +161,7 @@ comp_wearables_fig.add_shape(type='line', x0=1, x1=num_facs, y0=avg_sub_cost_com
 comp_wearables_fig.add_annotation(x=num_facs / 2, y=avg_sub_cost_comp_with_wearables, text=f"Average per bed = ${avg_sub_cost_comp_with_wearables}", showarrow=False, yshift=10, arrowhead=1)  
 comp_wearables_fig.update_yaxes(range=[0,85])
 comp_wearables_fig.add_trace(go.Scatter(y=comp_tiers_chopped_df['Wearables Cost'], x=comp_tiers_chopped_df['Facility Count'], mode='lines', name='additional costs'))
-comp_wearables_fig.update_layout(title="Competitor")
+comp_wearables_fig.update_layout(title="Competitor",title_x=0.5,yaxis_title="Cost (per bed/month)",yaxis_tickprefix = '$')
 comp_wearables_fig.update_layout(legend=dict( orientation="h", yanchor="bottom", y=0.02, xanchor="right", x=1))
 
 avg_sub_cost_vh_with_wearables = round(vh_tiers_df['Wearables Cost'].mean(), 2)
@@ -170,7 +170,7 @@ vh_wearables_fig.add_shape(type='line', x0=1, x1=num_facs, y0=avg_sub_cost_vh_wi
 vh_wearables_fig.add_annotation(x=num_facs / 2  , y=avg_sub_cost_vh_with_wearables, text=f"Average per bed = ${avg_sub_cost_vh_with_wearables}", showarrow=False, yshift=10, arrowhead=1)  
 vh_wearables_fig.update_yaxes(range=[0,85])
 vh_wearables_fig.add_trace(go.Scatter(y=vh_tiers_df['Wearables Cost'], x=vh_tiers_df['Facility Count'], mode='lines', name='additional costs'))
-vh_wearables_fig.update_layout(title="VisibleHand")
+vh_wearables_fig.update_layout(title="VisibleHand",title_x=0.5,yaxis_title="Cost (per bed/month)",yaxis_tickprefix = '$')
 vh_wearables_fig.update_layout(legend=dict( orientation="h", yanchor="bottom", y=0.02, xanchor="right", x=1))
 
 cc1, cc2 = st.columns(2)
@@ -217,7 +217,7 @@ comp_devices_fig.add_shape(type='line', x0=1, x1=num_facs, y0=avg_sub_cost_comp_
 comp_devices_fig.add_annotation(x=num_facs / 2, y=avg_sub_cost_comp_with_devices, text=f"Average per bed = ${avg_sub_cost_comp_with_devices}", showarrow=False, yshift=10, arrowhead=1)  
 comp_devices_fig.update_yaxes(range=[0,85])
 comp_devices_fig.add_trace(go.Scatter(y=comp_tiers_chopped_df['Devices Cost'], x=comp_tiers_chopped_df['Facility Count'], mode='lines', name='additional costs'))
-comp_devices_fig.update_layout(title="Competitor")
+comp_devices_fig.update_layout(title="Competitor",title_x=0.5,yaxis_title="Cost (per bed/month)",yaxis_tickprefix = '$')
 comp_devices_fig.update_layout(legend=dict( orientation="h", yanchor="bottom", y=0.02, xanchor="right", x=1))
 
 ccc1, ccc2 = st.columns(2)
@@ -232,34 +232,59 @@ st.markdown("------")
 
 st.markdown("## One-Time Costs")
 
-ccc1, ccc2 = st.columns(2)
+ccc1, ccc2, ccc3, cc4 = st.columns(4)
 
 total_vh = round(num_beds / beds_to_device_ratio * 275)
+# with ccc1:
+#     st.markdown("### Competitor")
+#     st.write("Bands", round(band_cost * num_beds))
+#     st.write("Wearables", round(beacon_cost * num_beds))
+#     st.write("Devices", round(num_beds / beds_to_device_ratio * 430))
+#     install_cost = st.number_input("Install Cost", 200)
+#     st.write("--")
+#     total_comp = round(band_cost * num_beds) + round(beacon_cost * num_beds) + round(num_beds / beds_to_device_ratio * 430) + round(install_cost * num_facs)
+#     st.write("Total", total_comp)
+#     st.write("Additional = ", total_comp - total_vh)
+#     st.write("Not included in summary, but amortized over 1 year, per bed per month")
+#     st.write("--> +", round((total_comp - total_vh)/ adc / 12 / num_facs, 2))
+    
 with ccc1:
     st.markdown("### Competitor")
-    st.write("Bands", round(band_cost * num_beds))
-    st.write("Wearables", round(beacon_cost * num_beds))
-    st.write("Devices", round(num_beds / beds_to_device_ratio * 430))
-    install_cost = st.number_input("Install Cost", 0)
+    st.text(f"Bands =      ${band_cost * num_beds:,.0f}")
+    st.text(f"Wearables =  ${beacon_cost * num_beds:,.0f}")
+    st.text(f"Devices =    ${(num_beds / beds_to_device_ratio) * 430:,.0f}")
+    #install_cost = st.number_input("Install Cost", 0)
+    install_cost = st.slider("Install Cost", 0, 5000, 1000, 100, format="$%d")
     st.write("--")
-    total_comp = round(band_cost * num_beds) + round(beacon_cost * num_beds) + round(num_beds / beds_to_device_ratio * 430) + round(install_cost * num_facs)
-    st.write("Total", total_comp)
-    st.write("Additional = ", total_comp - total_vh)
-    st.write("Not included in summary, but amortized over 1 year, per bed per month")
-    st.write("--> +", round((total_comp - total_vh)/ adc / 12 / num_facs, 2))
+    total_comp = band_cost * num_beds + beacon_cost * num_beds + (num_beds / beds_to_device_ratio) * 430 + install_cost * num_facs
+    st.text(f"Total =      ${total_comp:,.0f}")
+    st.text(f"Additional = ${total_comp - total_vh:,.0f}")
+    st.text(f"One Time Costs, not included in summary.\nAmortized over 1 year...\nExtra per bed per month: ${(total_comp - total_vh)/(adc * 12 * num_facs):,.2f}")
+   
+# with ccc3:
+#     st.markdown("### VisibleHand")    
+#     st.write("Bands", 0)
+#     st.write("Wearables", 0)
+#     st.write("Devices", round(num_beds / beds_to_device_ratio * 275))
+#     st.write("Install", 0)
+#     st.write(" ")
+#     st.write(" ")
+#     st.write(" ")
+#     st.write("--")
+#     st.write("Total", total_vh)
 
-with ccc2:
-    st.markdown("### VisibleHand")    
-    st.write("Bands", 0)
-    st.write("Wearables", 0)
-    st.write("Devices", round(num_beds / beds_to_device_ratio * 275))
-    st.write("Install", 0)
+
+with ccc3:
+    st.markdown("### VisibleHand")
+    st.text(f"Bands =      $0")
+    st.text(f"Wearables =  $0")
+    st.text(f"Devices =    ${round(num_beds / beds_to_device_ratio * 275):,.0f}")
+    st.text(f"Install =    $0")
     st.write(" ")
     st.write(" ")
     st.write(" ")
     st.write("--")
-    st.write("Total", total_vh)
-
+    st.text(f"Total =      ${total_vh:,.0f}")
 
 
 with st.sidebar:
@@ -275,7 +300,7 @@ with st.sidebar:
     fig_summary.update_layout(barmode='stack')
     fig_summary.update_traces(textposition='outside')
     fig_summary.update_layout(uniformtext_minsize=8, uniformtext_mode='hide', width=330)
-    fig_summary.update_layout(title="Average Price / Bed", template='none')
+    fig_summary.update_layout(title="Average Price / Bed", template='none',title_x=0.5,yaxis_title="Cost (per bed/month)",yaxis_tickprefix = '$')
     fig_summary.update_yaxes(range=[0,85])
 
     # fig_summary.update_layout(showlegend=False)
