@@ -240,11 +240,11 @@ total_vh = round(num_beds / beds_to_device_ratio * 275)
 with ccc1:
     st.markdown("### Competitor")
     st.text(f"Beacons =    ${1.3* beacon_cost * num_beds:,.0f}")
-    st.text(f"Devices =    ${(num_beds / beds_to_device_ratio) * 430:,.0f}")
+    st.text(f"Devices =    ${(num_beds / beds_to_device_ratio) * 445:,.0f}")
     #install_cost = st.number_input("Install Cost", 0)
     install_cost = st.slider("Install Cost", 0, 5000, 1000, 100, format="$%d")
     st.write("--")
-    total_comp = beacon_cost * num_beds + (num_beds / beds_to_device_ratio) * 430 + install_cost * num_facs
+    total_comp = beacon_cost * num_beds + (num_beds / beds_to_device_ratio) * 445 + install_cost * num_facs
     st.text(f"Total =      ${total_comp:,.0f}")
     st.text(f"Cost Diff =  ${total_comp:,.0f} - ${total_vh:,.0f}")
     st.text(f"Cost Diff =  ${total_comp -total_vh:,.0f}")
@@ -294,12 +294,12 @@ deviceCompPerFac = (cellular_cost_per_bed + mdm_cost_per_bed ) * adc
 installCompPerFac = beacon_cost * adc + (adc / beds_to_device_ratio) * 430 + install_cost
 installVH = 275 * adc/beds_to_device_ratio
 
-print( f"""deviceCompPerFac ${deviceCompPerFac:,.0f},
-      wearablesCompPerFac ${wearablesCompPerFac:,.0f},
-      installCompPerFac ${installCompPerFac:,.0f},
-      installVH ${installVH:,.0f},
-      vh_addn_beacon_cost_per_bed ${vh_addn_beacon_cost_per_bed:,.2f}"""
-      )
+# print( f"""deviceCompPerFac ${deviceCompPerFac:,.0f},
+#       wearablesCompPerFac ${wearablesCompPerFac:,.0f},
+#       installCompPerFac ${installCompPerFac:,.0f},
+#       installVH ${installVH:,.0f},
+#       vh_addn_beacon_cost_per_bed ${vh_addn_beacon_cost_per_bed:,.2f}"""
+#       )
 
 for month in range(1,5*12):
     
