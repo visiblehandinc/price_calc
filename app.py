@@ -232,20 +232,26 @@ st.markdown("## One-Time Costs")
 
 ccc1, ccc2 = st.columns(2)
 
+total_vh = round(num_beds / beds_to_device_ratio * 275)
 with ccc1:
     st.markdown("### Competitor")
-    st.write("Bands")
-    st.write("Wearables")
-    st.write("Devices")
+    st.write("Bands", round(band_cost * num_beds))
+    st.write("Wearables", round(beacon_cost * num_beds))
+    st.write("Devices", round(num_beds / beds_to_device_ratio * 430))
     st.write("Install ???")
+    st.write(" ")
+    total_comp = round(band_cost * num_beds) + round(beacon_cost * num_beds) + round(num_beds / beds_to_device_ratio * 430)
+    st.write("Total", total_comp)
+    st.write("Additional = ", total_comp - total_vh)
 
 with ccc2:
     st.markdown("### VisibleHand")    
     st.write("Bands", 0)
     st.write("Wearables", 0)
-    st.write("Devices", )
+    st.write("Devices", round(num_beds / beds_to_device_ratio * 275))
     st.write("Install", 0)
-
+    st.write(" ")
+    st.write("Total", total_vh)
 
 
 
