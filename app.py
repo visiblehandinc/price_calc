@@ -258,10 +258,10 @@ with ccc1:
     st.write("--")
     total_comp = band_cost * num_beds + beacon_cost * num_beds + (num_beds / beds_to_device_ratio) * 430 + install_cost * num_facs
     st.text(f"Total =      ${total_comp:,.0f}")
-    st.text(f"Cost Diff = (${total_comp:,.0f} - ${total_vh:,.0f})")
+    st.text(f"Cost Diff =  ${total_comp:,.0f} - ${total_vh:,.0f}")
     st.text(f"Cost Diff =  ${total_comp -total_vh:,.0f}")
     
-    st.text(f"One Time Costs, not included in summary.\nAmortized over 1 year...\nExtra per bed per month: ${(total_comp - total_vh)/(adc * 12 * num_facs):,.2f}")
+    st.write(f"One Time Costs, **not included in summary**.  \nAmortized over 1 year:  \nExtra per bed per month = **${(total_comp - total_vh)/(adc * 12 * num_facs):,.2f}**")
    
 # with ccc3:
 #     st.markdown("### VisibleHand")    
