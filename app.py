@@ -58,11 +58,11 @@ comp_tiers_df = pd.DataFrame({'Facility Count': fac_nums, 'Subscription Cost': c
 # chop off the df based on number of facs being used in the calc
 n = num_facs
 comp_tiers_chopped_df = comp_tiers_df.iloc[0:n]
-avg_sub_cost_comp = round(comp_tiers_chopped_df['Subscription Cost'].mean(), 2)
+avg_sub_cost_comp = comp_tiers_chopped_df['Subscription Cost'].mean()
 
 comp_tiers_fig = px.line(comp_tiers_chopped_df, x='Facility Count', y='Subscription Cost', width=600, height=300)
 comp_tiers_fig.add_shape(type='line', x0=1, x1=num_facs, y0=avg_sub_cost_comp, y1=avg_sub_cost_comp, line=dict(color="Gray", width=2, dash="dot"))   
-comp_tiers_fig.add_annotation(x=num_facs / 2, y=avg_sub_cost_comp, text=f"Average per bed = ${avg_sub_cost_comp}", showarrow=False, yshift=10, arrowhead=1)  
+comp_tiers_fig.add_annotation(x=num_facs / 2, y=avg_sub_cost_comp, text=f"Average per bed = ${avg_sub_cost_comp:.2f}", showarrow=False, yshift=10, arrowhead=1)  
 comp_tiers_fig.update_yaxes(range=[0,85])
 comp_tiers_fig.update_layout(title="Competitor", title_x=0.5,yaxis_title="Cost (per bed/month)",yaxis_tickprefix = '$')
 
@@ -99,11 +99,11 @@ vh_tiers_df = pd.DataFrame({'Facility Count': fac_num_list, 'Subscription Cost':
 
 vh_tiers_df = vh_tiers_df.groupby('Facility Count')['Subscription Cost'].mean().reset_index()
 
-avg_sub_cost_vh = round(vh_tiers_df['Subscription Cost'].mean(), 2)
+avg_sub_cost_vh = vh_tiers_df['Subscription Cost'].mean()
 
 vh_tiers_fig = px.line(vh_tiers_df, x='Facility Count', y='Subscription Cost', width=600, height=300)
 vh_tiers_fig.add_shape(type='line', x0=1, x1=num_facs, y0=avg_sub_cost_vh, y1=avg_sub_cost_vh, line=dict(color="Gray", width=2, dash="dot"))
-vh_tiers_fig.add_annotation(x=num_facs / 2  , y=avg_sub_cost_vh, text=f"Average per bed = ${avg_sub_cost_vh}", showarrow=False, yshift=10, arrowhead=1)  
+vh_tiers_fig.add_annotation(x=num_facs / 2  , y=avg_sub_cost_vh, text=f"Average per bed = ${avg_sub_cost_vh:.2f}", showarrow=False, yshift=10, arrowhead=1)  
 vh_tiers_fig.update_yaxes(range=[0,85])
 vh_tiers_fig.update_layout(title="VisibleHand",title_x=0.5,yaxis_title="Cost (per bed/month)",yaxis_tickprefix = '$')
 
@@ -132,7 +132,7 @@ with bc1:
 
     # assuming it is single use
     band_cost_per_bed = 30 / los * band_cost
-    st.write(f"Additional per bed cost = ${round(band_cost_per_bed, 2)}")
+    st.write(f"Additional per bed cost = ${band_cost_per_bed:.2f}")
 
 with bc2:
     st.markdown("### Beacons")       
@@ -155,19 +155,19 @@ vh_tiers_df['Wearables Cost'] = vh_tiers_df['Subscription Cost'] + (vh_addn_beac
 
 # do the new figures
 # ------------------
-avg_sub_cost_comp_with_wearables = round(comp_tiers_chopped_df['Wearables Cost'].mean(), 2)
+avg_sub_cost_comp_with_wearables = comp_tiers_chopped_df['Wearables Cost'].mean()
 comp_wearables_fig = px.line(comp_tiers_chopped_df, x='Facility Count', y='Subscription Cost', width=600, height=300)
 comp_wearables_fig.add_shape(type='line', x0=1, x1=num_facs, y0=avg_sub_cost_comp_with_wearables, y1=avg_sub_cost_comp_with_wearables, line=dict(color="Gray", width=2, dash="dot"))   
-comp_wearables_fig.add_annotation(x=num_facs / 2, y=avg_sub_cost_comp_with_wearables, text=f"Average per bed = ${avg_sub_cost_comp_with_wearables}", showarrow=False, yshift=10, arrowhead=1)  
+comp_wearables_fig.add_annotation(x=num_facs / 2, y=avg_sub_cost_comp_with_wearables, text=f"Average per bed = ${avg_sub_cost_comp_with_wearables:.2f}", showarrow=False, yshift=10, arrowhead=1)  
 comp_wearables_fig.update_yaxes(range=[0,85])
 comp_wearables_fig.add_trace(go.Scatter(y=comp_tiers_chopped_df['Wearables Cost'], x=comp_tiers_chopped_df['Facility Count'], mode='lines', name='additional costs'))
 comp_wearables_fig.update_layout(title="Competitor",title_x=0.5,yaxis_title="Cost (per bed/month)",yaxis_tickprefix = '$')
 comp_wearables_fig.update_layout(legend=dict( orientation="h", yanchor="bottom", y=0.02, xanchor="right", x=1))
 
-avg_sub_cost_vh_with_wearables = round(vh_tiers_df['Wearables Cost'].mean(), 2)
+avg_sub_cost_vh_with_wearables = vh_tiers_df['Wearables Cost'].mean()
 vh_wearables_fig = px.line(vh_tiers_df, x='Facility Count', y='Subscription Cost', width=600, height=300)
 vh_wearables_fig.add_shape(type='line', x0=1, x1=num_facs, y0=avg_sub_cost_vh_with_wearables, y1=avg_sub_cost_vh_with_wearables, line=dict(color="Gray", width=2, dash="dot"))
-vh_wearables_fig.add_annotation(x=num_facs / 2  , y=avg_sub_cost_vh_with_wearables, text=f"Average per bed = ${avg_sub_cost_vh_with_wearables}", showarrow=False, yshift=10, arrowhead=1)  
+vh_wearables_fig.add_annotation(x=num_facs / 2  , y=avg_sub_cost_vh_with_wearables, text=f"Average per bed = ${avg_sub_cost_vh_with_wearables:.2f}", showarrow=False, yshift=10, arrowhead=1)  
 vh_wearables_fig.update_yaxes(range=[0,85])
 vh_wearables_fig.add_trace(go.Scatter(y=vh_tiers_df['Wearables Cost'], x=vh_tiers_df['Facility Count'], mode='lines', name='additional costs'))
 vh_wearables_fig.update_layout(title="VisibleHand",title_x=0.5,yaxis_title="Cost (per bed/month)",yaxis_tickprefix = '$')
@@ -211,10 +211,10 @@ comp_tiers_chopped_df['Devices Cost'] = comp_tiers_chopped_df['Wearables Cost'] 
 
 # do the new figures
 # ------------------
-avg_sub_cost_comp_with_devices = round(comp_tiers_chopped_df['Devices Cost'].mean(), 2)
+avg_sub_cost_comp_with_devices = comp_tiers_chopped_df['Devices Cost'].mean()
 comp_devices_fig = px.line(comp_tiers_chopped_df, x='Facility Count', y='Subscription Cost', width=600, height=300)
 comp_devices_fig.add_shape(type='line', x0=1, x1=num_facs, y0=avg_sub_cost_comp_with_devices, y1=avg_sub_cost_comp_with_devices, line=dict(color="Gray", width=2, dash="dot"))   
-comp_devices_fig.add_annotation(x=num_facs / 2, y=avg_sub_cost_comp_with_devices, text=f"Average per bed = ${avg_sub_cost_comp_with_devices}", showarrow=False, yshift=10, arrowhead=1)  
+comp_devices_fig.add_annotation(x=num_facs / 2, y=avg_sub_cost_comp_with_devices, text=f"Average per bed = ${avg_sub_cost_comp_with_devices:.2f}", showarrow=False, yshift=10, arrowhead=1)  
 comp_devices_fig.update_yaxes(range=[0,85])
 comp_devices_fig.add_trace(go.Scatter(y=comp_tiers_chopped_df['Devices Cost'], x=comp_tiers_chopped_df['Facility Count'], mode='lines', name='additional costs'))
 comp_devices_fig.update_layout(title="Competitor",title_x=0.5,yaxis_title="Cost (per bed/month)",yaxis_tickprefix = '$')
@@ -296,9 +296,9 @@ with st.sidebar:
     vh_wearables_cost = avg_sub_cost_vh_with_wearables - avg_sub_cost_vh
     companies = ['Competitor', 'VH']
     fig_summary = go.Figure(data=[
-        go.Bar(name='Base', x=companies, y=[avg_sub_cost_comp, avg_sub_cost_vh]),
-        go.Bar(name='Wearables', x=companies, y=[comp_wearables_cost, vh_wearables_cost]),
-        go.Bar(name='Devices', x=companies, y=[comp_devices_cost, 0], text=[avg_sub_cost_comp_with_devices, avg_sub_cost_vh_with_wearables])
+        go.Bar(name='Base', x=companies, y=[round(avg_sub_cost_comp,2), round(avg_sub_cost_vh,2)]),
+        go.Bar(name='Wearables', x=companies, y=[round(comp_wearables_cost,2), round(vh_wearables_cost,2)]),
+        go.Bar(name='Devices', x=companies, y=[round(comp_devices_cost,2), 0], text=[f"${avg_sub_cost_comp_with_devices:.2f}", f"${avg_sub_cost_vh_with_wearables:.2f}"])
     ])
     fig_summary.update_layout(barmode='stack')
     fig_summary.update_traces(textposition='outside')
