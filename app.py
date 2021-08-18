@@ -6,7 +6,8 @@ import pandas as pd
 st.set_page_config(    
     page_title="True Cost",
     layout='wide',
-    page_icon="✋"
+    page_icon="✋",
+    initial_sidebar_state='collapsed'
 )
 
 st.title("True Cost of Solutions")
