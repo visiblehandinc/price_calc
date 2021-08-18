@@ -4,69 +4,78 @@ from plotly import graph_objects as go
 import pandas as pd
 
 st.set_page_config(    
-    page_title="True Price Calculator",
+    page_title="True Cost",
     layout='wide',
     page_icon="✋"
 )
 
-st.title("True Price Calculator")
+st.title("True Cost of Solutions")
 st.write(" ")
 
 # Hide toolbars for charts
 config={'displayModeBar': False}
 
+ac1, _ = st.columns([1,3])
+# with ac1:
+with st.sidebar:
+    num_facs = st.slider("Number of facilities to use in calculation", 1, 220, 190)
+fc1, fc2, fc3 = st.columns([2,1,1])
+with fc1:
+    main_figure_placeholder = st.empty()
+with fc2:
+    st.write(" ")
+    st.write(" ")
+    st.markdown("### Competitor Cost Year 1")
+    st.markdown("##### average per bed per month")
+    competitor_tot_cost_pbpm_placeholder = st.empty()
+    st.write(" ")
+    st.markdown("##### total")
+    competitor_tot_cost_annual_placeholder = st.empty()
+with fc3:
+    st.write(" ")
+    st.write(" ")
+    st.markdown("### VH Cost Year 1")
+    st.markdown("##### average per bed per month")
+    vh_tot_cost_pbpm_placeholder = st.empty()
+    st.write(" ")
+    st.markdown("##### total")
+    vh_tot_cost_annual_placeholder = st.empty()
+
 #----------------------------------------------------------------------------------------------------------------
-# Sidebar - Facility Info & Summary Cost per bed
+# Facility Info & Summary Cost per bed
 #----------------------------------------------------------------------------------------------------------------
 with st.sidebar:
-    st.markdown("## Facility Info")
-    num_facs = st.slider("Number of facilities to use in calculation", 1, 220, 190)
-    adc = st.slider("Average Daily Census", 50, 120, 85)
-    # Note: band may have to be replaced for long los, but can ignore for now <-- can use num_days_to_replace
-    los = st.slider("Average length of stay", 1, 60, 5)
+    with st.expander("Facility Info"):
+        adc = st.slider("Average Daily Census", 50, 120, 85)
+        los = st.slider("Average length of stay", 1, 60, 5)
 
 #----------------------------------------------------------------------------------------------------------------
 # Tiers
 #----------------------------------------------------------------------------------------------------------------
-iPadCost = 480
-st.markdown("## Competitor's Base Cost - Tiers")
-ct1, ct2, ct3 = st.columns([1,1,1])
-with ct2:
-    st.markdown("### Tier 2")    
-    os_subscription_2 = st.slider("Subscription price (bed/month)", 10.0, 70.0, 35.0, 1.0, format="$%f")
-    num_facs_start_tier_2 = st.slider("Starts at facility #", 1, 50, 26)    
+with st.sidebar:
+    with st.expander("Competitor's Tiers"):
+        os_subscription_1 = st.slider("Tier 1 subscription price (bed/month)", 10.0, 70.0, 45.0, 1.0, format="$%f")
+        os_subscription_2 = st.slider("Tier 2 subscription price (bed/month)", 10.0, 70.0, 35.0, 1.0, format="$%f")   
+        os_subscription_3 = st.slider("Tier 3 subscription price (bed/month)", 10.0, 70.0, 25.0, 1.0, format="$%f")
+        st.write("---")
+        num_facs_start_tier_2 = st.slider("Tier 2 starts at facility #", 1, 50, 26) 
+        num_facs_start_tier_3 = st.slider("Tier 3 starts at facility #", 1, 220, 201)   
 
-with ct3:
-    st.markdown("### Tier 3")  
-    os_subscription_3 = st.slider("Subscription price (bed/month)", 10.0, 70.0, 25.0, 1.0, format="$%f")
-    num_facs_start_tier_3 = st.slider("Starts at facility #", 1, 220, 201)     
-    
-with ct1:
-    st.markdown("### Tier 1")
-    os_subscription_1 = st.slider("Subscription price (bed/month)", 10.0, 70.0, 45.0, 1.0, format="$%f", help = f"VH Tiers are 'retroactive' in that all subscribed beds across facilities receive the the new tier price.  It is unlikely that Competitor applies tiers this way because (at the current settings) their monthly charges will drop ${(os_subscription_2-os_subscription_3)*num_facs_start_tier_3*adc:,.0f} when facility {num_facs_start_tier_3} goes live.")
 
 # Tiers for competitor
 #----------------------
+# We create a list of fac prices for each facility, from 1 to 220
 fac_nums = range(1,221)
-# e.g., 26 - 1 = 25
 comp_fac_prices_1 = [os_subscription_1] * (num_facs_start_tier_2 - 1)
-# 201 - 26 = 175
 comp_fac_prices_2 = [os_subscription_2] * (num_facs_start_tier_3 - num_facs_start_tier_2)
-# 220 - 201 + 1 = 20
 comp_fac_prices_3 = [os_subscription_3] * (220 - num_facs_start_tier_3 + 1)
 comp_fac_prices = comp_fac_prices_1 + comp_fac_prices_2 + comp_fac_prices_3
 
-comp_tiers_df = pd.DataFrame({'Facility Count': fac_nums, 'Subscription Cost': comp_fac_prices})
+# NOTE: the common denominator for all costs in the dfs will be per bed per month.
+competitor_costs_df = pd.DataFrame({'Facility Count': fac_nums, 'Subscription Cost': comp_fac_prices})
 # chop off the df based on number of facs being used in the calc
-n = num_facs
-comp_tiers_chopped_df = comp_tiers_df.iloc[0:n]
-avg_sub_cost_comp = comp_tiers_chopped_df['Subscription Cost'].mean()
-
-comp_tiers_fig = px.line(comp_tiers_chopped_df, x='Facility Count', y='Subscription Cost', width=600, height=300)
-comp_tiers_fig.add_shape(type='line', x0=1, x1=num_facs, y0=avg_sub_cost_comp, y1=avg_sub_cost_comp, line=dict(color="Gray", width=2, dash="dot"))   
-comp_tiers_fig.add_annotation(x=num_facs / 2, y=avg_sub_cost_comp, text=f"Average per bed = ${avg_sub_cost_comp:.2f}", showarrow=False, yshift=10, arrowhead=1)  
-comp_tiers_fig.update_yaxes(range=[0,85])
-comp_tiers_fig.update_layout(title="Competitor", title_x=0.5,yaxis_title="Cost (per bed/month)",yaxis_tickprefix = '$')
+competitor_costs_df = competitor_costs_df.iloc[0:num_facs]
+avg_base_subscription_cost_competitor = competitor_costs_df['Subscription Cost'].mean()
 
 
 # Tiers for VH
@@ -75,7 +84,7 @@ num_beds = num_facs * adc
 
 vh_price = 45
 if num_beds < 250:
-    vh_price = 58.8
+    vh_price = 58.5
 elif num_beds < 500:
     vh_price = 57.5
 elif num_beds < 1000:
@@ -86,8 +95,15 @@ elif num_beds < 5000:
     vh_price = 50.0
 elif num_beds < 10000:
     vh_price = 45.0
-else:
-    vh_price = 45.0
+
+vh_tiers_df = pd.DataFrame({'Bed Count':[1, 250, 500, 1000, 2500, 5000, 10000], '$/b/m':['58.50', '57.50', '55.00', '52.50', '50.00', '47.50', '45.00']})
+vh_tiers_df['empty'] = [''] * len(vh_tiers_df)
+vh_tiers_df = vh_tiers_df.set_index('empty')
+with st.sidebar:
+    with st.expander("VH Tiers"):
+        st.table(vh_tiers_df)
+        # because (at the current settings) their monthly charges will drop ${(os_subscription_2-os_subscription_3)*num_facs_start_tier_3*adc:,.0f} when facility {num_facs_start_tier_3} goes live."):
+        st.success("VH Tiers are retroactive in that all subscribed beds across facilities receive the new tier price. It is unlikely that Competitor applies tiers this way.")
 
 vh_bed_prices = [vh_price] * num_beds    
 
@@ -96,203 +112,195 @@ for i in range(num_facs):
     f = [i+1] * adc
     fac_num_list.extend(f)
 
+# This is based off of bed counts, so we'll squash it down to be by facility count.
+vh_costs_df = pd.DataFrame({'Facility Count': fac_num_list, 'Subscription Cost': vh_bed_prices})
+vh_costs_df = vh_costs_df.groupby('Facility Count')['Subscription Cost'].mean().reset_index()
 
-vh_tiers_df = pd.DataFrame({'Facility Count': fac_num_list, 'Subscription Cost': vh_bed_prices})
+avg_base_subscription_cost_vh = vh_costs_df['Subscription Cost'].mean()
 
-vh_tiers_df = vh_tiers_df.groupby('Facility Count')['Subscription Cost'].mean().reset_index()
-
-avg_sub_cost_vh = vh_tiers_df['Subscription Cost'].mean()
-
-vh_tiers_fig = px.line(vh_tiers_df, x='Facility Count', y='Subscription Cost', width=600, height=300)
-vh_tiers_fig.add_shape(type='line', x0=1, x1=num_facs, y0=avg_sub_cost_vh, y1=avg_sub_cost_vh, line=dict(color="Gray", width=2, dash="dot"))
-vh_tiers_fig.add_annotation(x=num_facs / 2  , y=avg_sub_cost_vh, text=f"Average per bed = ${avg_sub_cost_vh:.2f}", showarrow=False, yshift=10, arrowhead=1)  
-vh_tiers_fig.update_yaxes(range=[0,85])
-vh_tiers_fig.update_layout(title="VisibleHand",title_x=0.5,yaxis_title="Cost (per bed/month)",yaxis_tickprefix = '$')
-
-
-# Show the competitor tier figs - we have not added in extra costs yet.
-c1, c2 = st.columns(2)
-with c1:
-    st.plotly_chart(comp_tiers_fig, config=config)
-with c2:
-    st.plotly_chart(vh_tiers_fig, config=config)
-
-st.markdown("------")
 
 #----------------------------------------------------------------------------------------------------------------
 # Wearables
 #----------------------------------------------------------------------------------------------------------------
+with st.sidebar:
+    with st.expander("Wearables"):
+        st.markdown("### Bands")    
+        band_cost = st.slider("Cost of a single band", 0.25, 25.0, 2.0, 0.25, format="$%f",help="Bands are at best, single use. Sometimes more than 1 band might be needed for a patient during their treatment. This 'small' expense can add up quickly with volume.  Competitor has had customers churn after the initial contract term b/c of sticker shock of the consumables.")
+        band_cost_competitor_pbpm = 30 / los * band_cost
+        st.write(f"Additional per bed cost = ${band_cost_competitor_pbpm:.2f}")
 
-st.markdown("## Additional Costs from Consumables")
-bc1, _, bc2 = st.columns([3,1,3])
-with bc1:
-    st.markdown("### Bands")    
-    band_cost = st.slider("Cost of a single band", 0.25, 25.0, 2.0, 0.25, format="$%f",help="Bands are at best, single use. Sometimes more than 1 band might be needed for a patient during their treatment. This 'small' expense can add up quickly with volume.  Competitor has had customers churn after the initial contract term b/c of sticker shock of the consumables.")
+        st.markdown("### Beacons")       
+        beacon_cost_competitor = st.slider("Cost of a single beacon", 1.0, 100.0, 31.0, 0.5, format="$%f")
+        num_months_beacon_life = st.slider("# of months until beacon replacement", 1, 60, 12, help="VisibleHand replaces all non-working beacons for free.")        
+        loss_rate_per_month_beacons = st.slider("Average percent of beacons lost per month", 0, 50, 0, format="%f", help="Beacons have a large 'unplanned cost' potential if not managed well. We created a 'beacon tracker' module to help facilities better manage their loss rate to reduce costs.  In our experience, the loss rate is 10-30% depending on the facility's process control.")  
 
-    # single_use = st.checkbox("Single use?", True)
-    # if not single_use:
-    #     num_days_band_replace = st.slider("Average number of days to replace a band", 5, 365, 30)
-
-    # assuming it is single use
-    band_cost_per_bed = 30 / los * band_cost
-    st.write(f"Additional per bed cost = ${band_cost_per_bed:.2f}")
-
-with bc2:
-    st.markdown("### Beacons")       
-    beacon_cost = st.slider("Cost of a single beacon", 1.0, 100.0, 30.0, 0.5, format="$%f")
-    num_months_beacon_life = st.slider("Average number of months until beacon replacement (usually due to battery)", 1, 60, 10, help="VisibleHand replaces all non-working beacons for free.")        
-    loss_rate_per_month_beacons = st.slider("Average percent of beacons lost per month", 0, 50, 0, format="%f", help="Beacons have a large 'unplanned cost' potential if not managed well. We created a 'beacon tracker' module to help facilities better manage their loss rate to reduce costs.  In our experience, the loss rate is 10-30% depending on the facility's process control.")  
-
-    beacon_cost_per_bed = (1-(loss_rate_per_month_beacons/100)) ** num_months_beacon_life * (beacon_cost / num_months_beacon_life) + (beacon_cost * (loss_rate_per_month_beacons/100))
-    vh_addn_beacon_cost_per_bed = loss_rate_per_month_beacons/100 * 25
-    st.write(f"Additional per bed cost (Competitor)= ${beacon_cost_per_bed:.2f}")
-    st.write(f"Additional per bed cost (VH)= ${vh_addn_beacon_cost_per_bed:.2f}")
+        beacon_cost_competitor_pbpm = (1-(loss_rate_per_month_beacons/100)) ** num_months_beacon_life * (beacon_cost_competitor / num_months_beacon_life) + (beacon_cost_competitor * (loss_rate_per_month_beacons/100))
+        beacon_cost_vh_pbpm = loss_rate_per_month_beacons/100 * 25
+        st.write(f"Additional per bed cost (Competitor)= ${beacon_cost_competitor_pbpm:.2f}")
+        st.write(f"Additional per bed cost (VH)= ${beacon_cost_vh_pbpm:.2f}")
 
 
+# add in the additional costs to the dfs
+competitor_costs_df['Bands Cost'] = [band_cost_competitor_pbpm] * len(competitor_costs_df)
+competitor_costs_df['Beacons Cost'] = [beacon_cost_competitor_pbpm] * len(competitor_costs_df)
+competitor_costs_df['Wearables Cost'] = [band_cost_competitor_pbpm + beacon_cost_competitor_pbpm] * len(competitor_costs_df)
+# competitor_costs_df['Wearables Cost'] = competitor_costs_df['Subscription Cost'] + (band_cost_per_bed_competitor + beacon_cost_per_bed_competitor)
 
-# add in the additional costs to the comp df
-comp_tiers_chopped_df['Wearables Cost'] = comp_tiers_chopped_df['Subscription Cost'] + (band_cost_per_bed + beacon_cost_per_bed)
-
-vh_tiers_df['Wearables Cost'] = vh_tiers_df['Subscription Cost'] + (vh_addn_beacon_cost_per_bed)
-
-
-# do the new figures
-# ------------------
-avg_sub_cost_comp_with_wearables = comp_tiers_chopped_df['Wearables Cost'].mean()
-comp_wearables_fig = px.line(comp_tiers_chopped_df, x='Facility Count', y='Subscription Cost', width=600, height=300)
-comp_wearables_fig.add_shape(type='line', x0=1, x1=num_facs, y0=avg_sub_cost_comp_with_wearables, y1=avg_sub_cost_comp_with_wearables, line=dict(color="Gray", width=2, dash="dot"))   
-comp_wearables_fig.add_annotation(x=num_facs / 2, y=avg_sub_cost_comp_with_wearables, text=f"Average per bed = ${avg_sub_cost_comp_with_wearables:.2f}", showarrow=False, yshift=10, arrowhead=1)  
-comp_wearables_fig.update_yaxes(range=[0,85])
-comp_wearables_fig.add_trace(go.Scatter(y=comp_tiers_chopped_df['Wearables Cost'], x=comp_tiers_chopped_df['Facility Count'], mode='lines', name='additional costs'))
-comp_wearables_fig.update_layout(title="Competitor",title_x=0.5,yaxis_title="Cost (per bed/month)",yaxis_tickprefix = '$')
-comp_wearables_fig.update_layout(legend=dict( orientation="h", yanchor="bottom", y=0.02, xanchor="right", x=1))
-
-avg_sub_cost_vh_with_wearables = vh_tiers_df['Wearables Cost'].mean()
-vh_wearables_fig = px.line(vh_tiers_df, x='Facility Count', y='Subscription Cost', width=600, height=300)
-vh_wearables_fig.add_shape(type='line', x0=1, x1=num_facs, y0=avg_sub_cost_vh_with_wearables, y1=avg_sub_cost_vh_with_wearables, line=dict(color="Gray", width=2, dash="dot"))
-vh_wearables_fig.add_annotation(x=num_facs / 2  , y=avg_sub_cost_vh_with_wearables, text=f"Average per bed = ${avg_sub_cost_vh_with_wearables:.2f}", showarrow=False, yshift=10, arrowhead=1)  
-vh_wearables_fig.update_yaxes(range=[0,85])
-vh_wearables_fig.add_trace(go.Scatter(y=vh_tiers_df['Wearables Cost'], x=vh_tiers_df['Facility Count'], mode='lines', name='additional costs'))
-vh_wearables_fig.update_layout(title="VisibleHand",title_x=0.5,yaxis_title="Cost (per bed/month)",yaxis_tickprefix = '$')
-vh_wearables_fig.update_layout(legend=dict( orientation="h", yanchor="bottom", y=0.02, xanchor="right", x=1))
-
-cc1, cc2 = st.columns(2)
-with cc1:
-    st.plotly_chart(comp_wearables_fig, config=config)
-with cc2:
-    st.plotly_chart(vh_wearables_fig, config=config)
-
-st.markdown("------")
+vh_costs_df['Bands Cost'] = [0] * len(vh_costs_df)
+vh_costs_df['Beacons Cost'] = [beacon_cost_vh_pbpm] * len(vh_costs_df)
+vh_costs_df['Wearables Cost'] = [0 + beacon_cost_vh_pbpm] * len(vh_costs_df)
 
 
 #----------------------------------------------------------------------------------------------------------------
 # Devices
 #----------------------------------------------------------------------------------------------------------------
 
-st.markdown("## Additional Costs for Devices & Management")
-dc1, _, dc2 = st.columns([3,1,3])
-with dc1:
-    st.markdown("### Beds : Device Ratio")
-    beds_to_device_ratio = st.slider("Ratio of number of beds per device", 3, 20, 5, format="%d")
-    st.markdown("### Connectivity")
-    cellular_cost_per_phone_per_month = st.slider("Average Celluar Data cost, per device, per month", 0, 40, 18, format="$%f", help="Connectivity is the highest risk component of a successful implementation. Relying on local WiFi was our #1 support complaint and often very difficult to resolve. This was the main driver behind our decision to include cellular for our customers. It creates a more reliable system, reduces outages, reduces support, and - bonus - GPS tracking on all devices for better security.")
-    cellular_cost_per_bed = cellular_cost_per_phone_per_month / beds_to_device_ratio
-    st.write(f"Additional per bed cost = ${cellular_cost_per_bed:.2f}")
-    
-    if cellular_cost_per_phone_per_month == 0:
-        st.warning("If set to $0 due to Wifi plans, note that Wifi carries additional IT and support costs b/c it tends to fail more and connectivity issues are much harder to diagnose (and rule out) with wifi than with cellular.")
+with st.sidebar:
+    with st.expander("Devices and Management"):
+        st.markdown("### Beds : Device Ratio")
+        beds_to_device_ratio = st.slider("Ratio of number of beds per device", 3, 20, 5, format="%d")
+        st.markdown("### Connectivity")
+        cellular_cost_per_phone_per_month = st.slider("Average Celluar Data cost, per device, per month", 0, 40, 18, format="$%f", help="Connectivity is the highest risk component of a successful implementation. Relying on local WiFi was our #1 support complaint and often very difficult to resolve. This was the main driver behind our decision to include cellular for our customers. It creates a more reliable system, reduces outages, reduces support, and - bonus - GPS tracking on all devices for better security.")
+        cellular_cost_competitor_pbpm = cellular_cost_per_phone_per_month / beds_to_device_ratio
+        st.write(f"Additional per bed cost = ${cellular_cost_competitor_pbpm:.2f}")
+        
+        if cellular_cost_per_phone_per_month == 0:
+            st.warning("If set to $0 due to Wifi plans, note that Wifi carries additional IT and support costs b/c it tends to fail more and connectivity issues are much harder to diagnose (and rule out) with wifi than with cellular.")
 
-with dc2:
-    st.markdown("### Management & Support")    
-    mdm_software_cost_per_phone_per_year = st.slider("MDM software cost, per device, per year", 10, 25, 16)
-    num_devices_per_fte = st.slider("Number of devices a single FTE can fully support", 100, 1000, 500, 25, help = "Note: Lower if planning to use WiFi (see connectivity note).  \nAs a mobile application, success is inextricably linked with device performance, maintainence, security, and uptime. Offering device management (alongside connectivity & software) allows us to optimize the full scope of delivery a successful launch & long-term reliability.")
-    salary_fte = st.slider("'Fully loaded' salary for new IT FTE", 50000, 150000, 90000, 5000, format="$%f", help = "Note: mid-level IT hire.  \nVH remotely manages all devices included in the subscription cost... this includes lockdown, GPS tracking & geofence alerts, software/phone updating, remote shutdown, SIM management, connection management, broadcating management alerts to the phones, etc...  All of these functions will be the responsibility of UHS if OS is used.")
-    mdm_cost_per_bed = mdm_software_cost_per_phone_per_year/(12 * beds_to_device_ratio) + (salary_fte / 12) / (beds_to_device_ratio * num_devices_per_fte)
-    st.write(f"Additional per bed cost = ${mdm_cost_per_bed:.2f}")
+        st.markdown("### Management & Support")    
+        mdm_software_cost_per_phone_per_year = st.slider("MDM software cost, per device, per year", 10, 25, 16)
+        num_devices_per_fte = st.slider("Number of devices a single FTE can fully support", 100, 1000, 350, 25, help = "Note: Lower if planning to use WiFi (see connectivity note).  \nAs a mobile application, success is inextricably linked with device performance, maintainence, security, and uptime. Offering device management (alongside connectivity & software) allows us to optimize the full scope of delivery a successful launch & long-term reliability.")
+        salary_fte = st.slider("'Fully loaded' salary for new IT FTE", 50000, 150000, 90000, 5000, format="$%f", help = "Note: mid-level IT hire.  \nVH remotely manages all devices included in the subscription cost... this includes lockdown, GPS tracking & geofence alerts, software/phone updating, remote shutdown, SIM management, connection management, broadcating management alerts to the phones, etc...  All of these functions will be the responsibility of UHS if OS is used.")
+        mdm_cost_competitor_pbpm = mdm_software_cost_per_phone_per_year/(12 * beds_to_device_ratio) + (salary_fte / 12) / (beds_to_device_ratio * num_devices_per_fte)
+        st.write(f"Additional per bed cost = ${mdm_cost_competitor_pbpm:.2f}")
 
 
-comp_tiers_chopped_df['Devices Cost'] = comp_tiers_chopped_df['Wearables Cost'] + (cellular_cost_per_bed + mdm_cost_per_bed)
+# competitor_costs_df['Devices Cost'] = competitor_costs_df['Wearables Cost'] + (cellular_cost_per_bed + mdm_cost_per_bed)
+competitor_costs_df['Cellular Cost'] = [cellular_cost_competitor_pbpm] * len(competitor_costs_df)
+competitor_costs_df['MDM Cost'] = mdm_cost_competitor_pbpm * len(competitor_costs_df)
 
-# do the new figures
-# ------------------
-avg_sub_cost_comp_with_devices = comp_tiers_chopped_df['Devices Cost'].mean()
-comp_devices_fig = px.line(comp_tiers_chopped_df, x='Facility Count', y='Subscription Cost', width=600, height=300)
-comp_devices_fig.add_shape(type='line', x0=1, x1=num_facs, y0=avg_sub_cost_comp_with_devices, y1=avg_sub_cost_comp_with_devices, line=dict(color="Gray", width=2, dash="dot"))   
-comp_devices_fig.add_annotation(x=num_facs / 2, y=avg_sub_cost_comp_with_devices, text=f"Average per bed = ${avg_sub_cost_comp_with_devices:.2f}", showarrow=False, yshift=10, arrowhead=1)  
-comp_devices_fig.update_yaxes(range=[0,85])
-comp_devices_fig.add_trace(go.Scatter(y=comp_tiers_chopped_df['Devices Cost'], x=comp_tiers_chopped_df['Facility Count'], mode='lines', name='additional costs'))
-comp_devices_fig.update_layout(title="Competitor",title_x=0.5,yaxis_title="Cost (per bed/month)",yaxis_tickprefix = '$')
-comp_devices_fig.update_layout(legend=dict( orientation="h", yanchor="bottom", y=0.02, xanchor="right", x=1))
+vh_costs_df['Cellular Cost'] = [0] * len(vh_costs_df)
+vh_costs_df['MDM Cost'] = [0] * len(vh_costs_df)
 
-ccc1, ccc2 = st.columns(2)
-with ccc1:
-    st.plotly_chart(comp_devices_fig, config=config)
-with ccc2:
-    st.plotly_chart(vh_wearables_fig, config=config)
 
-st.markdown("------")
-
-st.markdown("## One-Time Costs")
-
-ccc1, _, ccc3 = st.columns([2,1,2])
-
+#----------------------------------------------------------------------------------------------------------------
+# One-Time Costs
+#----------------------------------------------------------------------------------------------------------------
+avg_device_cost_competitor = 440
 total_vh = round(num_beds / beds_to_device_ratio * 275)
-    
-with ccc1:
-    st.markdown("### Competitor")
-    st.text(f"Beacons =    ${1.3* beacon_cost * num_beds:,.0f}")
-    st.text(f"Devices =    ${(num_beds / beds_to_device_ratio) * iPadCost:,.0f}")
-    #install_cost = st.number_input("Install Cost", 0)
-    install_cost = st.slider("Install Cost", 0, 5000, 1000, 100, format="$%d")
-    st.write("--")
-    total_comp = beacon_cost * num_beds + (num_beds / beds_to_device_ratio) * iPadCost + install_cost * num_facs
-    st.text(f"Total =      ${total_comp:,.0f}")
-    st.text(f"Cost Diff =  ${total_comp:,.0f} - ${total_vh:,.0f}")
-    st.text(f"Cost Diff =  ${total_comp -total_vh:,.0f}")
-    
-    st.write(f"One Time Costs  \nAmortized over 1 year  \nExtra per bed per month = **${(total_comp - total_vh)/(adc * 12 * num_facs):,.2f}**  \n**(Note: Excluded from Avg cost per bed)**  ")
-   
-
-with ccc3:
-    st.markdown("### VisibleHand")
-    st.text(f"Beacons =    $0")
-    st.text(f"Devices =    ${round(num_beds / beds_to_device_ratio * 275):,.0f}")
-    st.text(f"Install =    $0")
-    st.text(" ")
-    st.text(" ")
-    st.text(" ")
-    st.text(" ")
-    st.text("--")
-    st.text(f"Total =      ${total_vh:,.0f}")
-
 
 with st.sidebar:
-    comp_wearables_cost = avg_sub_cost_comp_with_wearables - avg_sub_cost_comp
-    comp_devices_cost = avg_sub_cost_comp_with_devices - avg_sub_cost_comp_with_wearables
-    vh_wearables_cost = avg_sub_cost_vh_with_wearables - avg_sub_cost_vh
-    companies = ['Competitor', 'VH']
-    fig_summary = go.Figure(data=[
-        go.Bar(name='Base', x=companies, y=[round(avg_sub_cost_comp,2), round(avg_sub_cost_vh,2)]),
-        go.Bar(name='Consumables', x=companies, y=[round(comp_wearables_cost,2), round(vh_wearables_cost,2)]),
-        go.Bar(name='Devices', x=companies, y=[round(comp_devices_cost,2), 0], text=[f"${avg_sub_cost_comp_with_devices:.2f}", f"${avg_sub_cost_vh_with_wearables:.2f}"])
-    ])
-    fig_summary.update_layout(barmode='stack')
-    fig_summary.update_traces(textposition='outside')
-    fig_summary.update_layout(uniformtext_minsize=8, uniformtext_mode='hide', width=330)
-    fig_summary.update_layout(title=f"Average Cost per Bed<br>({num_facs} facilities)", template='none',title_x=0.5,yaxis_title="Cost (per bed/month)",yaxis_tickprefix = '$')
-    fig_summary.update_yaxes(range=[0,85])
+    with st.expander("Startup Costs"):
+        st.markdown("### Competitor")
+        beacon_startup_cost_competitor = 1.3 * beacon_cost_competitor * num_beds
+        devices_startup_cost_competitor = (num_beds / beds_to_device_ratio) * avg_device_cost_competitor
+        install_cost_competitor = st.slider("Install Cost", 0, 5000, 2500, 100, format="$%d")
+        total_upfront_costs_competitor = (beacon_startup_cost_competitor + devices_startup_cost_competitor + install_cost_competitor) * num_facs
+        
+        beacon_startup_cost_competitor_pbpm = beacon_startup_cost_competitor / (adc * 12 * num_facs)
+        devices_startup_cost_competitor_pbpm = devices_startup_cost_competitor / (adc * 12 * num_facs)
+        install_cost_competitor_pbpm = install_cost_competitor / (adc * 12 * num_facs)
+        total_upfront_costs_competitor_pbpm = total_upfront_costs_competitor / (adc * 12 * num_facs)
 
-    # fig_summary.update_layout(showlegend=False)
-    st.plotly_chart(fig_summary, config=config)   
+        beacon_startup_cost_vh = 0
+        devices_startup_cost_vh = num_beds / (beds_to_device_ratio) * 275
+        install_cost_vh = 0
+        total_upfront_costs_vh = (beacon_startup_cost_vh + devices_startup_cost_vh + install_cost_vh) * num_facs
+        beacon_startup_cost_vh_pbpm = beacon_startup_cost_vh / (adc * 12 * num_facs)
+        devices_startup_cost_vh_pbpm = devices_startup_cost_vh / (adc * 12 * num_facs)
+        install_cost_vh_pbpm = install_cost_vh / (adc * 12 * num_facs)
+        total_upfront_costs_vh_pbpm = total_upfront_costs_vh / (adc * 12 * num_facs)   
+
+        # st.write(f"One Time Costs  \nAmortized over 1 year  \nExtra per bed per month = **${total_upfront_costs_competitor_pbpm:,.2f}**  \n**(Note: Excluded from Avg cost per bed)**  ")
+        st.text(f"Beacons =    ${beacon_startup_cost_competitor:,.0f} (+${beacon_startup_cost_competitor_pbpm:,.2f}/b/m)")
+        st.text(f"Devices =    ${devices_startup_cost_competitor:,.0f} (+${devices_startup_cost_competitor_pbpm:,.2f}/b/m)")  
+        st.write("")      
+        st.text(f"Total =      ${total_upfront_costs_competitor:,.0f}")    
+
+        st.markdown("### VisibleHand")
+        st.text(f"Beacons =    $0")
+        st.text(f"Devices =    ${num_beds / beds_to_device_ratio * 275:,.0f}, (+${devices_startup_cost_vh_pbpm:,.2f}/b/m)")
+        st.text(f"Install =    $0")
+        st.text("")
+        st.text(f"Total =      ${total_vh:,.0f}")
+
+        st.write("---")
+        st.text(f"Cost Diff =  ${total_upfront_costs_competitor -total_vh:,.0f}")
+
+
+
+# Add startup costs to standard pbpm costs
+tot_base_cost_competitor_pbpm = avg_base_subscription_cost_competitor
+tot_band_cost_competitor_pbpm = band_cost_competitor_pbpm
+tot_beacon_cost_competitor_pbpm = beacon_cost_competitor_pbpm + beacon_startup_cost_competitor_pbpm
+tot_device_cost_competitor_pbpm = devices_startup_cost_competitor_pbpm
+tot_cell_cost_competitor_pbpm = cellular_cost_competitor_pbpm
+tot_mdm_cost_competitor_pbpm = mdm_cost_competitor_pbpm
+tot_install_cost_competitor_pbpm = install_cost_competitor_pbpm
+tot_cost_competitor_pbpm = tot_base_cost_competitor_pbpm \
+    + tot_band_cost_competitor_pbpm \
+    + tot_beacon_cost_competitor_pbpm \
+    + tot_device_cost_competitor_pbpm \
+    + tot_cell_cost_competitor_pbpm \
+    + tot_mdm_cost_competitor_pbpm \
+    + tot_install_cost_competitor_pbpm
+tot_cost_competitor_annual = tot_cost_competitor_pbpm * adc * 12 * num_facs
+
+competitor_tot_cost_pbpm_placeholder.markdown(f'## ${tot_cost_competitor_pbpm:,.2f}')
+competitor_tot_cost_annual_placeholder.markdown(f'## ${tot_cost_competitor_annual:,.2f}')
+
+
+tot_base_cost_vh_pbpm = avg_base_subscription_cost_vh
+tot_band_cost_vh_pbpm = 0
+tot_beacon_cost_vh_pbpm = beacon_cost_vh_pbpm + beacon_startup_cost_vh_pbpm
+tot_device_cost_vh_pbpm = devices_startup_cost_vh_pbpm
+tot_cell_cost_vh_pbpm = 0
+tot_mdm_cost_vh_pbpm = 0
+tot_install_cost_vh_pbpm = install_cost_vh_pbpm
+tot_cost_vh_pbpm = tot_base_cost_vh_pbpm \
+    + tot_band_cost_vh_pbpm \
+    + tot_beacon_cost_vh_pbpm \
+    + tot_device_cost_vh_pbpm \
+    + tot_cell_cost_vh_pbpm \
+    + tot_mdm_cost_vh_pbpm \
+    + tot_install_cost_vh_pbpm
+tot_cost_vh_annual = tot_cost_vh_pbpm * adc * 12 * num_facs
+
+vh_tot_cost_pbpm_placeholder.markdown(f"## ${tot_cost_vh_pbpm:,.2f}")
+vh_tot_cost_annual_placeholder.markdown(f"## ${tot_cost_vh_annual:,.2f}")
+
+
+companies = ['Competitor', 'VH']
+fig_summary = go.Figure(data=[
+    go.Bar(name='Base', x=companies, y=[round(tot_base_cost_competitor_pbpm,2), round(tot_base_cost_vh_pbpm,2)]),
+    go.Bar(name='Bands', x=companies, y=[round(tot_band_cost_competitor_pbpm,2), round(tot_band_cost_vh_pbpm,2)]),
+    go.Bar(name='Beacons', x=companies, y=[round(tot_beacon_cost_competitor_pbpm,2), round(tot_beacon_cost_vh_pbpm, 2)]),
+    go.Bar(name='Devices', x=companies, y=[round(tot_device_cost_competitor_pbpm,2), round(tot_device_cost_vh_pbpm, 2)]),
+    go.Bar(name='MDM', x=companies, y=[round(tot_mdm_cost_competitor_pbpm,2), round(tot_mdm_cost_vh_pbpm, 2)]),
+    go.Bar(name='Cellular', x=companies, y=[round(tot_cell_cost_competitor_pbpm,2), round(tot_cell_cost_vh_pbpm, 2)]),
+    go.Bar(name='Install', x=companies, y=[round(tot_install_cost_competitor_pbpm,2), round(tot_install_cost_vh_pbpm, 2)])
+])
+fig_summary.update_layout(barmode='stack')
+fig_summary.update_traces(textposition='outside')
+fig_summary.update_layout(uniformtext_minsize=8, uniformtext_mode='hide', width=500)
+fig_summary.update_layout(title=f"Average Cost Per Bed Per Month<br>(year 1, {num_facs} facilities)", template='none',title_x=0.5,yaxis_title="",yaxis_tickprefix = '$')
+# fig_summary.update_yaxes(range=[0,80])
+
+# fig_summary.update_layout(showlegend=False)
+main_figure_placeholder.plotly_chart(fig_summary, config=config)   
+
+
+
 
 #----------------------------------------------------------------------------------------------------------------
 # Do the cumulative calcs and plot
 #----------------------------------------------------------------------------------------------------------------
+num_facs_for_rollout = 198
 monthDFs = []
-newFacsMonth = round(num_facs/24)
-wearablesCompPerFac = (band_cost_per_bed + beacon_cost_per_bed) * adc  
-deviceCompPerFac = (cellular_cost_per_bed + mdm_cost_per_bed ) * adc
-installCompPerFac = beacon_cost * adc + (adc / beds_to_device_ratio) * iPadCost + install_cost
+newFacsMonth = round(num_facs_for_rollout/24)
+wearablesCompPerFac = (band_cost_competitor_pbpm + beacon_cost_competitor_pbpm) * adc  
+deviceCompPerFac = (cellular_cost_competitor_pbpm + mdm_cost_competitor_pbpm ) * adc
+installCompPerFac = beacon_cost_competitor * adc + (adc / beds_to_device_ratio) * avg_device_cost_competitor + install_cost_competitor
 installVH = 275 * adc/beds_to_device_ratio
 
 # print( f"""deviceCompPerFac ${deviceCompPerFac:,.0f},
@@ -306,18 +314,18 @@ for month in range(1,5*12):
     
     # Calc # of beds
 
-    facs = min(month * newFacsMonth, num_facs)
+    facs = min(month * newFacsMonth, num_facs_for_rollout)
     beds = facs * adc
     
     # Calc comp base, install, wearables, MDM costs
-    avgCostCompPerBed = comp_tiers_df.iloc[0:facs]['Subscription Cost'].mean()
+    avgCostCompPerBed = competitor_costs_df.iloc[0:facs]['Subscription Cost'].mean()
     
-    newFacs = min(month * newFacsMonth, num_facs) - min((month-1) * newFacsMonth, num_facs)
+    newFacs = min(month * newFacsMonth, num_facs_for_rollout) - min((month-1) * newFacsMonth, num_facs_for_rollout)
     totalCompCost = facs * (avgCostCompPerBed*adc + wearablesCompPerFac + deviceCompPerFac) + newFacs * installCompPerFac
     
     # Calc vh base, install, wearables costs
     if beds < 251:
-        costVHBed = 58.8
+        costVHBed = 58.5
     elif beds < 501:
         costVHBed = 57.5
     elif beds < 1001:
@@ -331,7 +339,7 @@ for month in range(1,5*12):
     else:
         costVHBed = 45.0
     
-    totalVHCost =  beds * (costVHBed + vh_addn_beacon_cost_per_bed) + installVH * newFacs;
+    totalVHCost =  beds * (costVHBed + beacon_cost_vh_pbpm) + installVH * newFacs;
     
     monthDFs.append( {'Month':month,
                       'Facilities':facs,
@@ -351,7 +359,7 @@ cost['cumVHSavings'] = cost.cumComp - cost.cumVH
 cum_cost_fig = px.line(cost, x='Month', y='cumVHSavings', width=600, height=300)
 cum_cost_fig.add_trace(go.Scatter(y=cost.cumComp, x=cost.Month, mode='lines', name='Competitor Cumulative Cost'))
 cum_cost_fig.add_trace(go.Scatter(y=cost.cumVH, x=cost.Month, mode='lines', name='VH Cumulative Cost'))
-t = f"Cumulative Savings with VH<br>(2 year rollout of {num_facs} facilities)"
+t = f"Cumulative Savings with VH<br>(2 year rollout of {num_facs_for_rollout} facilities)"
 cum_cost_fig.update_layout(title=t,title_x=0.5,yaxis_title="$ Savings",yaxis_tickprefix = '$')
 cum_cost_fig.update_layout(legend=dict( orientation="h", yanchor="top", y=1, xanchor="left", x=0))
 
