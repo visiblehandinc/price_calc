@@ -318,9 +318,16 @@ fig_summary.add_annotation(x='Competitor', y=comp_text_y, text=f"${tot_cost_comp
         size=20,
         color="Purple"
     ))
+fig_summary.update_layout(legend=dict(
+    orientation="h",
+    yanchor="bottom",
+    y=1.02,
+    xanchor="center",
+    x=0.5
+))
 # fig_summary.update_layout(color='Set2')
 # fig_summary.update_layout(showlegend=False)
-main_figure_placeholder.plotly_chart(fig_summary, config=config)   
+main_figure_placeholder.plotly_chart(fig_summary, config=config, use_container_width=True)   
 
 
 
@@ -401,7 +408,7 @@ with st.expander(f"Cumulative Costs"):
     cum_cost_fig.add_trace(go.Scatter(y=cost.cumComp, x=cost.Month, mode='lines', name='Competitor'))
     cum_cost_fig.add_trace(go.Scatter(y=cost.cumVH, x=cost.Month, mode='lines', name='VH'))
     cum_cost_fig.update_layout(title=t2,title_x=0.5,yaxis_title="Cumulative $'s",yaxis_tickprefix = '$')
-    cum_cost_fig.update_layout(legend=dict( orientation="v", yanchor="top", y=0.99, xanchor="left", x=0.01))
+    cum_cost_fig.update_layout(legend=dict( orientation="v", yanchor="top", y=0.99, xanchor="left", x=0.01), template='simple_white')
     cum_cost_fig.add_vline(x=59, line_width=2, line_dash="dash", line_color="black")
     cum_cost_fig.add_vline(x=23, line_width=2, line_dash="dash", line_color="blue")
     cum_cost_fig.add_trace(go.Scatter(x=[24],y=[cost.cumComp.max() * .9],mode="text",text=[f"{num_facs_for_rollout} Installed"],textposition="middle right",showlegend = False, textfont=dict(
@@ -413,7 +420,7 @@ with st.expander(f"Cumulative Costs"):
     rc1, rc2, rc3 = st.columns([2,1,1])   
    
     with rc1:
-        st.plotly_chart(cum_cost_fig)
+        st.plotly_chart(cum_cost_fig, config=config, use_container_width=True)
     with rc2:
         st.write(" ")
         st.write(" ")
