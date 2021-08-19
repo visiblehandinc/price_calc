@@ -397,8 +397,12 @@ with st.expander(f"Cumulative Costs"):
     cum_cost_fig.update_layout(title=t2,title_x=0.5,yaxis_title="Cumulative $'s",yaxis_tickprefix = '$')
     cum_cost_fig.update_layout(legend=dict( orientation="v", yanchor="top", y=0.99, xanchor="left", x=0.01))
     cum_cost_fig.add_vline(x=59, line_width=2, line_dash="dash", line_color="black")
-    cum_cost_fig.add_vline(x=23, line_width=2, line_dash="dash", line_color="black")
-    cum_cost_fig.add_trace(go.Scatter(x=[24],y=[cost.cumComp.max() * .9],mode="text",text=["Fully Installed"],textposition="middle right",showlegend = False))
+    cum_cost_fig.add_vline(x=23, line_width=2, line_dash="dash", line_color="blue")
+    cum_cost_fig.add_trace(go.Scatter(x=[24],y=[cost.cumComp.max() * .9],mode="text",text=["Fully Installed"],textposition="middle right",showlegend = False, textfont=dict(
+        family="sans serif",
+        size=14,
+        color="Blue"
+    )))
  
     rc1, rc2, rc3 = st.columns([2,1,1])   
    
