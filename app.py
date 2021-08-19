@@ -233,7 +233,7 @@ with st.sidebar:
 # Add startup costs to standard pbpm costs
 tot_base_cost_competitor_pbpm = avg_base_subscription_cost_competitor
 tot_band_cost_competitor_pbpm = band_cost_competitor_pbpm
-tot_beacon_cost_competitor_pbpm = beacon_cost_competitor_pbpm + beacon_startup_cost_competitor_pbpm
+tot_beacon_cost_competitor_pbpm = beacon_cost_competitor_pbpm * (max(0,12-num_months_beacon_life)/12) + beacon_startup_cost_competitor_pbpm
 tot_device_cost_competitor_pbpm = devices_startup_cost_competitor_pbpm
 tot_cell_cost_competitor_pbpm = cellular_cost_competitor_pbpm
 tot_mdm_cost_competitor_pbpm = mdm_cost_competitor_pbpm
