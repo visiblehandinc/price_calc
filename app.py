@@ -110,7 +110,7 @@ elif num_beds < 10000:
 else:
     vh_price = 45
 
-vh_tiers_df = pd.DataFrame({'Bed Count':[1, 250, 500, 1000, 2500, 5000, 10000], '$/b/m':['58.50', '57.50', '55.00', '52.50', '50.00', '47.50', '45.00']})
+vh_tiers_df = pd.DataFrame({'Bed Count':[1, 250, 500, 1000, 2500, 5000, 10000], '$/b/m':['$58.50', '$57.50', '$55.00', '$52.50', '$50.00', '$47.50', '$45.00']})
 vh_tiers_df['empty'] = [''] * len(vh_tiers_df)
 vh_tiers_df = vh_tiers_df.set_index('empty')
 with st.sidebar:
@@ -383,13 +383,31 @@ cost['cumComp'] = cost.totalCompCost.cumsum()
 cost['cumVH'] = cost.totalVHCost.cumsum()
 cost['cumVHSavings'] = cost.cumComp - cost.cumVH
 
-with st.expander("2-Year Rollout of all Facilities"):
-    cum_cost_fig = px.line(cost, x='Month', y='cumVHSavings', width=600, height=300)
+f_txt = 'Facility' if num_facs_for_rollout == 1 else 'Facilities'
+with st.expander(f"Cumulative Cost for 2-year Rollout of {num_facs_for_rollout} {f_txt}"):
+    cum_cost_fig = px.line(cost, x='Month', y='cumComp', width=600, height=300)
     cum_cost_fig.add_trace(go.Scatter(y=cost.cumComp, x=cost.Month, mode='lines', name='Competitor Cumulative Cost'))
     cum_cost_fig.add_trace(go.Scatter(y=cost.cumVH, x=cost.Month, mode='lines', name='VH Cumulative Cost'))
-    t = f"Cumulative Savings with VH<br>(2 year rollout of {num_facs_for_rollout} facilities)"
+    t = f"Cumulative Savings with VH<br>(2 year rollout of {num_facs_for_rollout} facilities - 5 years shown)"
     cum_cost_fig.update_layout(title=t,title_x=0.5,yaxis_title="$ Savings",yaxis_tickprefix = '$')
-    cum_cost_fig.update_layout(legend=dict( orientation="h", yanchor="top", y=1, xanchor="left", x=0))
+    cum_cost_fig.update_layout(legend=dict( orientation="v", yanchor="top", y=1, xanchor="left", x=0))
+    
+    rc1, rc2, rc3 = st.columns([2,1,1])   
 
-    st.plotly_chart(cum_cost_fig)
+    title_placeholder.title(f"Cumulative Cost Full 2-year Rollout")
 
+    with rc1:
+        st.plotly_chart(cum_cost_fig)
+    with rc2:
+        st.write(" ")
+        st.write(" ")
+        st.markdown("### Cumulative Competitor Cost  \nat 2 years")
+        competitor_cum_tot_cost_annual_placeholder = st.empty()
+    with rc3:
+        st.write(" ")
+        st.write(" ")
+        st.markdown("### Cumulative VH Cost  \nat 2 years")
+        vh_cum_tot_cost_annual_placeholder = st.empty()
+
+competitor_cum_tot_cost_annual_placeholder.markdown(f'## ${cost.cumComp[23]:,.0f}')
+vh_cum_tot_cost_annual_placeholder.markdown(f'## ${cost.cumVH[23]:,.0f}')
