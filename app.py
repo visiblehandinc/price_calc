@@ -388,7 +388,7 @@ with st.expander(f"Cumulative Costs"):
     
     t2 = f"Cumulative Costs over 5 years"
     
-    st.title(f"Cumulative Costs  \n**2 year rollout of {num_facs_for_rollout} facilities**")
+    st.title(f"Cumulative Costs  \n**2 year rollout of {num_facs_for_rollout} {f_txt2}**")
     st.write("")
 
     cum_cost_fig = px.line(cost, x='Month', y='cumComp', width=600, height=300)
@@ -411,12 +411,12 @@ with st.expander(f"Cumulative Costs"):
     with rc2:
         st.write(" ")
         st.write(" ")
-        st.markdown("### Competitor Cost  \nat 5 years")
+        st.markdown("### Cumulative Competitor  \nat 5 years")
         competitor_cum_tot_cost_annual_placeholder = st.empty()
     with rc3:
         st.write(" ")
         st.write(" ")
-        st.markdown("### VH Cost  \nat 5 years")
+        st.markdown("### Cumulative VH  \nat 5 years")
         vh_cum_tot_cost_annual_placeholder = st.empty()
 
 competitor_cum_tot_cost_annual_placeholder.markdown(f'## ${cost.cumComp[58]:,.0f}')
