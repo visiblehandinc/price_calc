@@ -322,7 +322,7 @@ main_figure_placeholder.plotly_chart(fig_summary, config=config)
 #----------------------------------------------------------------------------------------------------------------
 # Do the cumulative calcs and plot
 #----------------------------------------------------------------------------------------------------------------
-num_facs_for_rollout = 198
+num_facs_for_rollout = num_facs
 monthDFs = []
 newFacsMonth = round(num_facs_for_rollout/24)
 wearablesCompPerFac = (band_cost_competitor_pbpm + beacon_cost_competitor_pbpm) * adc  
