@@ -19,7 +19,7 @@ config={'displayModeBar': False}
 ac1, _ = st.columns([1,3])
 # with ac1:
 with st.sidebar:
-    num_facs = st.slider("Number of facilities to use in calculation", 1, 220, 190)
+    num_facs = st.slider("Number of facilities to use in calculation", 1, 220, 1)
 fc1, fc2, fc3 = st.columns([2,1,1])
 with fc1:
     main_figure_placeholder = st.empty()
@@ -104,7 +104,7 @@ with st.sidebar:
     with st.expander("VH Tiers"):
         st.table(vh_tiers_df)
         # because (at the current settings) their monthly charges will drop ${(os_subscription_2-os_subscription_3)*num_facs_start_tier_3*adc:,.0f} when facility {num_facs_start_tier_3} goes live."):
-        st.success("VH Tiers are retroactive in that all subscribed beds across facilities receive the new tier price. It is unlikely that Competitor applies tiers this way.")
+        st.success("VH Tiers are retroactive in that all subscribed beds across facilities receive the new tier price.")
 
 vh_bed_prices = [vh_price] * num_beds    
 
