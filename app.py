@@ -9,8 +9,7 @@ st.set_page_config(
     page_icon="✋",
     initial_sidebar_state='collapsed'
 )
-
-st.title("True Cost of Solutions")
+title_placeholder = st.empty()
 st.write(" ")
 
 # Hide toolbars for charts
@@ -21,6 +20,11 @@ ac1, _ = st.columns([1,3])
 with st.sidebar:
     num_facs = st.slider("Number of facilities to use in calculation", 1, 220, 1)
 fc1, fc2, fc3 = st.columns([2,1,1])
+
+f_txt = 'Facility' if num_facs == 1 else 'Facilities'
+
+title_placeholder.title(f"First Year Cost for {num_facs} {f_txt}")
+
 with fc1:
     main_figure_placeholder = st.empty()
 with fc2:
@@ -30,6 +34,9 @@ with fc2:
     st.markdown("##### average per bed per month")
     competitor_tot_cost_pbpm_placeholder = st.empty()
     st.write(" ")
+    st.markdown("##### startup costs")
+    competitor_startup_costs_placeholder = st.empty()    
+    st.write(" ")
     st.markdown("##### total")
     competitor_tot_cost_annual_placeholder = st.empty()
 with fc3:
@@ -38,6 +45,9 @@ with fc3:
     st.markdown("### VH Cost Year 1")
     st.markdown("##### average per bed per month")
     vh_tot_cost_pbpm_placeholder = st.empty()
+    st.write(" ")
+    st.markdown("##### startup costs")
+    vh_startup_costs_placeholder = st.empty()    
     st.write(" ")
     st.markdown("##### total")
     vh_tot_cost_annual_placeholder = st.empty()
@@ -196,31 +206,31 @@ with st.sidebar:
         beacon_startup_cost_competitor = 1.3 * beacon_cost_competitor * num_beds
         devices_startup_cost_competitor = (num_beds / beds_to_device_ratio) * avg_device_cost_competitor
         install_cost_competitor = st.slider("Install Cost", 0, 5000, 2500, 100, format="$%d")
-        total_upfront_costs_competitor = (beacon_startup_cost_competitor + devices_startup_cost_competitor + install_cost_competitor) * num_facs
+        total_upfront_costs_competitor = devices_startup_cost_competitor + (install_cost_competitor * num_facs)
         
         beacon_startup_cost_competitor_pbpm = beacon_startup_cost_competitor / (adc * 12 * num_facs)
-        devices_startup_cost_competitor_pbpm = devices_startup_cost_competitor / (adc * 12 * num_facs)
-        install_cost_competitor_pbpm = install_cost_competitor / (adc * 12 * num_facs)
-        total_upfront_costs_competitor_pbpm = total_upfront_costs_competitor / (adc * 12 * num_facs)
+        # devices_startup_cost_competitor_pbpm = devices_startup_cost_competitor / (adc * 12 * num_facs)
+        # install_cost_competitor_pbpm = install_cost_competitor / (adc * 12 * num_facs)
+        # total_upfront_costs_competitor_pbpm = total_upfront_costs_competitor / (adc * 12 * num_facs)
 
         beacon_startup_cost_vh = 0
         devices_startup_cost_vh = num_beds / (beds_to_device_ratio) * 275
         install_cost_vh = 0
-        total_upfront_costs_vh = (beacon_startup_cost_vh + devices_startup_cost_vh + install_cost_vh) * num_facs
+        total_upfront_costs_vh = devices_startup_cost_vh
         beacon_startup_cost_vh_pbpm = beacon_startup_cost_vh / (adc * 12 * num_facs)
         devices_startup_cost_vh_pbpm = devices_startup_cost_vh / (adc * 12 * num_facs)
         install_cost_vh_pbpm = install_cost_vh / (adc * 12 * num_facs)
         total_upfront_costs_vh_pbpm = total_upfront_costs_vh / (adc * 12 * num_facs)   
 
         # st.write(f"One Time Costs  \nAmortized over 1 year  \nExtra per bed per month = **${total_upfront_costs_competitor_pbpm:,.2f}**  \n**(Note: Excluded from Avg cost per bed)**  ")
-        st.text(f"Beacons =    ${beacon_startup_cost_competitor:,.0f} (+${beacon_startup_cost_competitor_pbpm:,.2f}/b/m)")
-        st.text(f"Devices =    ${devices_startup_cost_competitor:,.0f} (+${devices_startup_cost_competitor_pbpm:,.2f}/b/m)")  
+        # st.text(f"Beacons =    ${beacon_startup_cost_competitor:,.0f} (+${beacon_startup_cost_competitor_pbpm:,.2f}/b/m)")
+        st.text(f"Devices =    ${devices_startup_cost_competitor:,.0f}")  
         st.write("")      
         st.text(f"Total =      ${total_upfront_costs_competitor:,.0f}")    
 
         st.markdown("### VisibleHand")
         st.text(f"Beacons =    $0")
-        st.text(f"Devices =    ${num_beds / beds_to_device_ratio * 275:,.0f}, (+${devices_startup_cost_vh_pbpm:,.2f}/b/m)")
+        st.text(f"Devices =    ${num_beds / beds_to_device_ratio * 275:,.0f}")
         st.text(f"Install =    $0")
         st.text("")
         st.text(f"Total =      ${total_vh:,.0f}")
@@ -233,42 +243,40 @@ with st.sidebar:
 # Add startup costs to standard pbpm costs
 tot_base_cost_competitor_pbpm = avg_base_subscription_cost_competitor
 tot_band_cost_competitor_pbpm = band_cost_competitor_pbpm
-tot_beacon_cost_competitor_pbpm = beacon_cost_competitor_pbpm + beacon_startup_cost_competitor_pbpm
-tot_device_cost_competitor_pbpm = devices_startup_cost_competitor_pbpm
+tot_beacon_cost_competitor_pbpm = beacon_cost_competitor_pbpm * (max(0,12-num_months_beacon_life)/12) + beacon_startup_cost_competitor_pbpm
+# tot_device_cost_competitor_pbpm = devices_startup_cost_competitor_pbpm
 tot_cell_cost_competitor_pbpm = cellular_cost_competitor_pbpm
 tot_mdm_cost_competitor_pbpm = mdm_cost_competitor_pbpm
-tot_install_cost_competitor_pbpm = install_cost_competitor_pbpm
+# tot_install_cost_competitor_pbpm = install_cost_competitor_pbpm
 tot_cost_competitor_pbpm = tot_base_cost_competitor_pbpm \
     + tot_band_cost_competitor_pbpm \
     + tot_beacon_cost_competitor_pbpm \
-    + tot_device_cost_competitor_pbpm \
     + tot_cell_cost_competitor_pbpm \
-    + tot_mdm_cost_competitor_pbpm \
-    + tot_install_cost_competitor_pbpm
-tot_cost_competitor_annual = tot_cost_competitor_pbpm * adc * 12 * num_facs
+    + tot_mdm_cost_competitor_pbpm 
+tot_cost_competitor_annual = tot_cost_competitor_pbpm * adc * 12 * num_facs + total_upfront_costs_competitor
 
 competitor_tot_cost_pbpm_placeholder.markdown(f'## ${tot_cost_competitor_pbpm:,.2f}')
-competitor_tot_cost_annual_placeholder.markdown(f'## ${tot_cost_competitor_annual:,.2f}')
+competitor_startup_costs_placeholder.markdown(f'## ${total_upfront_costs_competitor:,.0f}')
+competitor_tot_cost_annual_placeholder.markdown(f'## ${tot_cost_competitor_annual:,.0f}')
 
 
 tot_base_cost_vh_pbpm = avg_base_subscription_cost_vh
 tot_band_cost_vh_pbpm = 0
 tot_beacon_cost_vh_pbpm = beacon_cost_vh_pbpm + beacon_startup_cost_vh_pbpm
-tot_device_cost_vh_pbpm = devices_startup_cost_vh_pbpm
+# tot_device_cost_vh_pbpm = devices_startup_cost_vh_pbpm
 tot_cell_cost_vh_pbpm = 0
 tot_mdm_cost_vh_pbpm = 0
-tot_install_cost_vh_pbpm = install_cost_vh_pbpm
+# tot_install_cost_vh_pbpm = install_cost_vh_pbpm
 tot_cost_vh_pbpm = tot_base_cost_vh_pbpm \
     + tot_band_cost_vh_pbpm \
     + tot_beacon_cost_vh_pbpm \
-    + tot_device_cost_vh_pbpm \
     + tot_cell_cost_vh_pbpm \
-    + tot_mdm_cost_vh_pbpm \
-    + tot_install_cost_vh_pbpm
-tot_cost_vh_annual = tot_cost_vh_pbpm * adc * 12 * num_facs
+    + tot_mdm_cost_vh_pbpm 
+tot_cost_vh_annual = tot_cost_vh_pbpm * adc * 12 * num_facs + total_upfront_costs_vh
 
 vh_tot_cost_pbpm_placeholder.markdown(f"## ${tot_cost_vh_pbpm:,.2f}")
-vh_tot_cost_annual_placeholder.markdown(f"## ${tot_cost_vh_annual:,.2f}")
+vh_startup_costs_placeholder.markdown(f'## ${total_upfront_costs_vh:,.0f}')
+vh_tot_cost_annual_placeholder.markdown(f"## ${tot_cost_vh_annual:,.0f}")
 
 
 companies = ['Competitor', 'VH']
@@ -276,15 +284,15 @@ fig_summary = go.Figure(data=[
     go.Bar(name='Base', x=companies, y=[round(tot_base_cost_competitor_pbpm,2), round(tot_base_cost_vh_pbpm,2)]),
     go.Bar(name='Bands', x=companies, y=[round(tot_band_cost_competitor_pbpm,2), round(tot_band_cost_vh_pbpm,2)]),
     go.Bar(name='Beacons', x=companies, y=[round(tot_beacon_cost_competitor_pbpm,2), round(tot_beacon_cost_vh_pbpm, 2)]),
-    go.Bar(name='Devices', x=companies, y=[round(tot_device_cost_competitor_pbpm,2), round(tot_device_cost_vh_pbpm, 2)]),
+    # go.Bar(name='Devices', x=companies, y=[round(tot_device_cost_competitor_pbpm,2), round(tot_device_cost_vh_pbpm, 2)]),
     go.Bar(name='MDM', x=companies, y=[round(tot_mdm_cost_competitor_pbpm,2), round(tot_mdm_cost_vh_pbpm, 2)]),
     go.Bar(name='Cellular', x=companies, y=[round(tot_cell_cost_competitor_pbpm,2), round(tot_cell_cost_vh_pbpm, 2)]),
-    go.Bar(name='Install', x=companies, y=[round(tot_install_cost_competitor_pbpm,2), round(tot_install_cost_vh_pbpm, 2)])
+    # go.Bar(name='Install', x=companies, y=[round(tot_install_cost_competitor_pbpm,2), round(tot_install_cost_vh_pbpm, 2)])
 ])
 fig_summary.update_layout(barmode='stack')
 fig_summary.update_traces(textposition='outside')
 fig_summary.update_layout(uniformtext_minsize=8, uniformtext_mode='hide', width=500)
-fig_summary.update_layout(title=f"Average Cost Per Bed Per Month<br>(year 1, {num_facs} facilities)", template='none',title_x=0.5,yaxis_title="",yaxis_tickprefix = '$')
+fig_summary.update_layout(title=f"Average Cost Per Bed Per Month", template='none',title_x=0.5,yaxis_title="",yaxis_tickprefix = '$')
 # fig_summary.update_yaxes(range=[0,80])
 
 # fig_summary.update_layout(showlegend=False)
