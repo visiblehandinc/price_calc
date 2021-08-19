@@ -386,10 +386,10 @@ cost['cumVHSavings'] = cost.cumComp - cost.cumVH
 f_txt = 'Facility' if num_facs_for_rollout == 1 else 'Facilities'
 with st.expander(f"Cumulative Cost for 2-year Rollout of {num_facs_for_rollout} {f_txt}"):
     cum_cost_fig = px.line(cost, x='Month', y='cumComp', width=600, height=300)
-    cum_cost_fig.add_trace(go.Scatter(y=cost.cumComp, x=cost.Month, mode='lines', name='Competitor Cumulative Cost'))
-    cum_cost_fig.add_trace(go.Scatter(y=cost.cumVH, x=cost.Month, mode='lines', name='VH Cumulative Cost'))
-    t = f"Cumulative Savings with VH<br>(2 year rollout of {num_facs_for_rollout} facilities - 5 years shown)"
-    cum_cost_fig.update_layout(title=t,title_x=0.5,yaxis_title="$ Savings",yaxis_tickprefix = '$')
+    cum_cost_fig.add_trace(go.Scatter(y=cost.cumComp, x=cost.Month, mode='lines', name='Competitor'))
+    cum_cost_fig.add_trace(go.Scatter(y=cost.cumVH, x=cost.Month, mode='lines', name='VH'))
+    t2 = f"Cumulative Costs<br>(2 year rollout of {num_facs_for_rollout} facilities - 5 years shown)<br>"
+    cum_cost_fig.update_layout(title=t2,title_x=0.5,yaxis_title="Cumulative $'s",yaxis_tickprefix = '$')
     cum_cost_fig.update_layout(legend=dict( orientation="v", yanchor="top", y=1, xanchor="left", x=0))
     cum_cost_fig.add_vline(x=24, line_width=2, line_dash="dash", line_color="black")
     
