@@ -84,9 +84,9 @@ comp_fac_prices_3 = [os_subscription_3] * (220 - num_facs_start_tier_3 + 1)
 comp_fac_prices = comp_fac_prices_1 + comp_fac_prices_2 + comp_fac_prices_3
 
 # NOTE: the common denominator for all costs in the dfs will be per bed per month.
-competitor_costs_df = pd.DataFrame({'Facility Count': fac_nums, 'Subscription Cost': comp_fac_prices})
+competitor_costs_full_df = pd.DataFrame({'Facility Count': fac_nums, 'Subscription Cost': comp_fac_prices})
 # chop off the df based on number of facs being used in the calc
-competitor_costs_df = competitor_costs_df.iloc[0:num_facs]
+competitor_costs_df = competitor_costs_full_df.iloc[0:num_facs]
 avg_base_subscription_cost_competitor = competitor_costs_df['Subscription Cost'].mean()
 
 
@@ -324,7 +324,7 @@ main_figure_placeholder.plotly_chart(fig_summary, config=config)
 #----------------------------------------------------------------------------------------------------------------
 num_facs_for_rollout = num_facs
 monthDFs = []
-newFacsMonth = round(num_facs_for_rollout/24)
+newFacsMonth = max(round(num_facs_for_rollout/24),1)
 wearablesCompPerFac = (band_cost_competitor_pbpm + beacon_cost_competitor_pbpm) * adc  
 deviceCompPerFac = (cellular_cost_competitor_pbpm + mdm_cost_competitor_pbpm ) * adc
 installCompPerFac = beacon_cost_competitor * adc + (adc / beds_to_device_ratio) * avg_device_cost_competitor + install_cost_competitor
@@ -333,8 +333,8 @@ installVH = 275 * adc/beds_to_device_ratio
 # print( f"""deviceCompPerFac ${deviceCompPerFac:,.0f},
 #       wearablesCompPerFac ${wearablesCompPerFac:,.0f},
 #       installCompPerFac ${installCompPerFac:,.0f},
-#       installVH ${installVH:,.0f},
-#       vh_addn_beacon_cost_per_bed ${vh_addn_beacon_cost_per_bed:,.2f}"""
+#       installVH ${installVH:,.0f}
+#       """
 #       )
 
 for month in range(1,5*12):
@@ -345,7 +345,7 @@ for month in range(1,5*12):
     beds = facs * adc
     
     # Calc comp base, install, wearables, MDM costs
-    avgCostCompPerBed = competitor_costs_df.iloc[0:facs]['Subscription Cost'].mean()
+    avgCostCompPerBed = competitor_costs_full_df.iloc[0:facs]['Subscription Cost'].mean()
     
     newFacs = min(month * newFacsMonth, num_facs_for_rollout) - min((month-1) * newFacsMonth, num_facs_for_rollout)
     totalCompCost = facs * (avgCostCompPerBed*adc + wearablesCompPerFac + deviceCompPerFac) + newFacs * installCompPerFac
@@ -396,7 +396,8 @@ with st.expander(f"Cumulative Costs"):
     cum_cost_fig.add_trace(go.Scatter(y=cost.cumVH, x=cost.Month, mode='lines', name='VH'))
     cum_cost_fig.update_layout(title=t2,title_x=0.5,yaxis_title="Cumulative $'s",yaxis_tickprefix = '$')
     cum_cost_fig.update_layout(legend=dict( orientation="v", yanchor="top", y=1, xanchor="left", x=0))
-    cum_cost_fig.add_vline(x=24, line_width=2, line_dash="dash", line_color="black")
+    cum_cost_fig.add_vline(x=59, line_width=2, line_dash="dash", line_color="black")
+    cum_cost_fig.add_vline(x=23, line_width=2, line_dash="dash", line_color="black")
  
     rc1, rc2, rc3 = st.columns([2,1,1])   
    
@@ -405,13 +406,16 @@ with st.expander(f"Cumulative Costs"):
     with rc2:
         st.write(" ")
         st.write(" ")
-        st.markdown("### Competitor Cost  \nat 2 years")
+        st.markdown("### Competitor Cost  \nat 5 years")
         competitor_cum_tot_cost_annual_placeholder = st.empty()
     with rc3:
         st.write(" ")
         st.write(" ")
-        st.markdown("### VH Cost  \nat 2 years")
+        st.markdown("### VH Cost  \nat 5 years")
         vh_cum_tot_cost_annual_placeholder = st.empty()
 
-competitor_cum_tot_cost_annual_placeholder.markdown(f'## ${cost.cumComp[23]:,.0f}')
-vh_cum_tot_cost_annual_placeholder.markdown(f'## ${cost.cumVH[23]:,.0f}')
+competitor_cum_tot_cost_annual_placeholder.markdown(f'## ${cost.cumComp[58]:,.0f}')
+vh_cum_tot_cost_annual_placeholder.markdown(f'## ${cost.cumVH[58]:,.0f}')
+
+#st.table( cost.iloc[-1,:] )
+
