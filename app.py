@@ -290,10 +290,10 @@ tot_device_cost_vh_pbpm = tot_mdm_cost_vh_pbpm + tot_cell_cost_vh_pbpm
 companies = ['Competitor', 'VH']
 fig_summary = go.Figure(data=[
     go.Bar(name='Base', x=companies, y=[round(tot_base_cost_competitor_pbpm,2), round(tot_base_cost_vh_pbpm,2)]),
-    # go.Bar(name='Bands', x=companies, y=[round(tot_band_cost_competitor_pbpm,2), round(tot_band_cost_vh_pbpm,2)]),
-    # go.Bar(name='Beacons', x=companies, y=[round(tot_beacon_cost_competitor_pbpm,2), round(tot_beacon_cost_vh_pbpm, 2)]),
     go.Bar(name='Consumables', x=companies, y=[round(tot_consumable_cost_competitor_pbpm,2), round(tot_consumable_cost_vh_pbpm, 2)]),
     go.Bar(name='Devices', x=companies, y=[round(tot_device_cost_competitor_pbpm,2), round(tot_device_cost_vh_pbpm, 2)]),
+    # go.Bar(name='Bands', x=companies, y=[round(tot_band_cost_competitor_pbpm,2), round(tot_band_cost_vh_pbpm,2)]),
+    # go.Bar(name='Beacons', x=companies, y=[round(tot_beacon_cost_competitor_pbpm,2), round(tot_beacon_cost_vh_pbpm, 2)]),
     # go.Bar(name='MDM', x=companies, y=[round(tot_mdm_cost_competitor_pbpm,2), round(tot_mdm_cost_vh_pbpm, 2)]),
     # go.Bar(name='Cellular', x=companies, y=[round(tot_cell_cost_competitor_pbpm,2), round(tot_cell_cost_vh_pbpm, 2)]),
     # # go.Bar(name='Install', x=companies, y=[round(tot_install_cost_competitor_pbpm,2), round(tot_install_cost_vh_pbpm, 2)])
