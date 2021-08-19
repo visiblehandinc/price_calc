@@ -383,31 +383,34 @@ cost['cumComp'] = cost.totalCompCost.cumsum()
 cost['cumVH'] = cost.totalVHCost.cumsum()
 cost['cumVHSavings'] = cost.cumComp - cost.cumVH
 
-f_txt = 'Facility' if num_facs_for_rollout == 1 else 'Facilities'
-with st.expander(f"Cumulative Cost for 2-year Rollout of {num_facs_for_rollout} {f_txt}"):
+f_txt2 = 'Facility' if num_facs_for_rollout == 1 else 'Facilities'
+with st.expander(f"Cumulative Costs"):
+    
+    t2 = f"Cumulative Costs over 5 years"
+    
+    st.title(f"Cumulative Costs  \n**2 year rollout of {num_facs_for_rollout} facilities**")
+    st.write("")
+
     cum_cost_fig = px.line(cost, x='Month', y='cumComp', width=600, height=300)
     cum_cost_fig.add_trace(go.Scatter(y=cost.cumComp, x=cost.Month, mode='lines', name='Competitor'))
     cum_cost_fig.add_trace(go.Scatter(y=cost.cumVH, x=cost.Month, mode='lines', name='VH'))
-    t2 = f"Cumulative Costs<br>(2 year rollout of {num_facs_for_rollout} facilities - 5 years shown)<br>"
     cum_cost_fig.update_layout(title=t2,title_x=0.5,yaxis_title="Cumulative $'s",yaxis_tickprefix = '$')
     cum_cost_fig.update_layout(legend=dict( orientation="v", yanchor="top", y=1, xanchor="left", x=0))
     cum_cost_fig.add_vline(x=24, line_width=2, line_dash="dash", line_color="black")
-    
+ 
     rc1, rc2, rc3 = st.columns([2,1,1])   
-
-    title_placeholder.title(f"Cumulative Cost Full 2-year Rollout")
-
+   
     with rc1:
         st.plotly_chart(cum_cost_fig)
     with rc2:
         st.write(" ")
         st.write(" ")
-        st.markdown("### Cumulative Competitor Cost  \nat 2 years")
+        st.markdown("### Competitor Cost  \nat 2 years")
         competitor_cum_tot_cost_annual_placeholder = st.empty()
     with rc3:
         st.write(" ")
         st.write(" ")
-        st.markdown("### Cumulative VH Cost  \nat 2 years")
+        st.markdown("### VH Cost  \nat 2 years")
         vh_cum_tot_cost_annual_placeholder = st.empty()
 
 competitor_cum_tot_cost_annual_placeholder.markdown(f'## ${cost.cumComp[23]:,.0f}')
