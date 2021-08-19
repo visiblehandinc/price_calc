@@ -281,16 +281,22 @@ vh_tot_cost_pbpm_placeholder.markdown(f"## ${tot_cost_vh_pbpm:,.2f}")
 vh_startup_costs_placeholder.markdown(f'## ${total_upfront_costs_vh:,.0f}')
 vh_tot_cost_annual_placeholder.markdown(f"## ${tot_cost_vh_annual:,.0f}")
 
+tot_consumable_cost_competitor_pbpm = tot_band_cost_competitor_pbpm + tot_beacon_cost_competitor_pbpm
+tot_device_cost_competitor_pbpm = tot_mdm_cost_competitor_pbpm + tot_cell_cost_competitor_pbpm
+
+tot_consumable_cost_vh_pbpm = tot_band_cost_vh_pbpm + tot_beacon_cost_vh_pbpm
+tot_device_cost_vh_pbpm = tot_mdm_cost_vh_pbpm + tot_cell_cost_vh_pbpm
 
 companies = ['Competitor', 'VH']
 fig_summary = go.Figure(data=[
     go.Bar(name='Base', x=companies, y=[round(tot_base_cost_competitor_pbpm,2), round(tot_base_cost_vh_pbpm,2)]),
-    go.Bar(name='Bands', x=companies, y=[round(tot_band_cost_competitor_pbpm,2), round(tot_band_cost_vh_pbpm,2)]),
-    go.Bar(name='Beacons', x=companies, y=[round(tot_beacon_cost_competitor_pbpm,2), round(tot_beacon_cost_vh_pbpm, 2)]),
-    # go.Bar(name='Devices', x=companies, y=[round(tot_device_cost_competitor_pbpm,2), round(tot_device_cost_vh_pbpm, 2)]),
-    go.Bar(name='MDM', x=companies, y=[round(tot_mdm_cost_competitor_pbpm,2), round(tot_mdm_cost_vh_pbpm, 2)]),
-    go.Bar(name='Cellular', x=companies, y=[round(tot_cell_cost_competitor_pbpm,2), round(tot_cell_cost_vh_pbpm, 2)]),
-    # go.Bar(name='Install', x=companies, y=[round(tot_install_cost_competitor_pbpm,2), round(tot_install_cost_vh_pbpm, 2)])
+    # go.Bar(name='Bands', x=companies, y=[round(tot_band_cost_competitor_pbpm,2), round(tot_band_cost_vh_pbpm,2)]),
+    # go.Bar(name='Beacons', x=companies, y=[round(tot_beacon_cost_competitor_pbpm,2), round(tot_beacon_cost_vh_pbpm, 2)]),
+    go.Bar(name='Consumables', x=companies, y=[round(tot_consumable_cost_competitor_pbpm,2), round(tot_consumable_cost_vh_pbpm, 2)]),
+    go.Bar(name='Devices', x=companies, y=[round(tot_device_cost_competitor_pbpm,2), round(tot_device_cost_vh_pbpm, 2)]),
+    # go.Bar(name='MDM', x=companies, y=[round(tot_mdm_cost_competitor_pbpm,2), round(tot_mdm_cost_vh_pbpm, 2)]),
+    # go.Bar(name='Cellular', x=companies, y=[round(tot_cell_cost_competitor_pbpm,2), round(tot_cell_cost_vh_pbpm, 2)]),
+    # # go.Bar(name='Install', x=companies, y=[round(tot_install_cost_competitor_pbpm,2), round(tot_install_cost_vh_pbpm, 2)])
 ])
 fig_summary.update_layout(barmode='stack')
 fig_summary.update_traces(textposition='outside')
@@ -411,12 +417,12 @@ with st.expander(f"Cumulative Costs"):
     with rc2:
         st.write(" ")
         st.write(" ")
-        st.markdown("### Cumulative Competitor  \nat 5 years")
+        st.markdown("### Competitor Cumulative  \nat 5 years")
         competitor_cum_tot_cost_annual_placeholder = st.empty()
     with rc3:
         st.write(" ")
         st.write(" ")
-        st.markdown("### Cumulative VH  \nat 5 years")
+        st.markdown("### VH Cumulative  \nat 5 years")
         vh_cum_tot_cost_annual_placeholder = st.empty()
 
 competitor_cum_tot_cost_annual_placeholder.markdown(f'## ${cost.cumComp[58]:,.0f}')
