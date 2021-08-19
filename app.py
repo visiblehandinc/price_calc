@@ -391,6 +391,7 @@ with st.expander(f"Cumulative Cost for 2-year Rollout of {num_facs_for_rollout} 
     t = f"Cumulative Savings with VH<br>(2 year rollout of {num_facs_for_rollout} facilities - 5 years shown)"
     cum_cost_fig.update_layout(title=t,title_x=0.5,yaxis_title="$ Savings",yaxis_tickprefix = '$')
     cum_cost_fig.update_layout(legend=dict( orientation="v", yanchor="top", y=1, xanchor="left", x=0))
+    cum_cost_fig.add_vline(x=24, line_width=2, line_dash="dash", line_color="black")
     
     rc1, rc2, rc3 = st.columns([2,1,1])   
 
