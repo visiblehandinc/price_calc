@@ -1,3 +1,4 @@
+from re import template
 import streamlit as st
 import plotly.express as px
 from plotly import graph_objects as go
@@ -105,7 +106,9 @@ elif num_beds < 2500:
 elif num_beds < 5000:
     vh_price = 50.0
 elif num_beds < 10000:
-    vh_price = 45.0
+    vh_price = 47.5
+else:
+    vh_price = 45
 
 vh_tiers_df = pd.DataFrame({'Bed Count':[1, 250, 500, 1000, 2500, 5000, 10000], '$/b/m':['58.50', '57.50', '55.00', '52.50', '50.00', '47.50', '45.00']})
 vh_tiers_df['empty'] = [''] * len(vh_tiers_df)
@@ -293,8 +296,23 @@ fig_summary.update_layout(barmode='stack')
 fig_summary.update_traces(textposition='outside')
 fig_summary.update_layout(uniformtext_minsize=8, uniformtext_mode='hide', width=500)
 fig_summary.update_layout(title=f"Average Cost Per Bed Per Month", template='none',title_x=0.5,yaxis_title="",yaxis_tickprefix = '$')
-# fig_summary.update_yaxes(range=[0,80])
-
+fig_summary.update_layout(template='simple_white')
+top_num = max(tot_cost_competitor_pbpm, tot_cost_vh_pbpm)
+top_num+=10
+fig_summary.update_yaxes(range=[0,top_num])
+vh_text_y = tot_cost_vh_pbpm + 3
+fig_summary.add_annotation(x='VH', y=vh_text_y, text=f"${tot_cost_vh_pbpm:,.2f}", showarrow=False, font=dict(
+        family="sans serif",
+        size=20,
+        color="RoyalBlue"
+    ))
+comp_text_y = tot_cost_competitor_pbpm + 3
+fig_summary.add_annotation(x='Competitor', y=comp_text_y, text=f"${tot_cost_competitor_pbpm:,.2f}", showarrow=False, font=dict(
+        family="sans serif",
+        size=20,
+        color="Purple"
+    ))
+# fig_summary.update_layout(color='Set2')
 # fig_summary.update_layout(showlegend=False)
 main_figure_placeholder.plotly_chart(fig_summary, config=config)   
 
