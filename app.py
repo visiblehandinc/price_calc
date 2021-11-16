@@ -95,22 +95,20 @@ avg_base_subscription_cost_competitor = competitor_costs_df['Subscription Cost']
 num_beds = num_facs * adc
 
 vh_price = 45
-if num_beds < 250:
-    vh_price = 58.5
+if num_beds < 100:
+    vh_price = 65.0
+elif num_beds < 250:
+    vh_price = 60.0    
 elif num_beds < 500:
     vh_price = 57.5
 elif num_beds < 1000:
     vh_price = 55
 elif num_beds < 2500:
     vh_price = 52.5
-elif num_beds < 5000:
-    vh_price = 50.0
-elif num_beds < 10000:
-    vh_price = 47.5
 else:
-    vh_price = 45
+    vh_price = 50
 
-vh_tiers_df = pd.DataFrame({'Bed Count':[1, 250, 500, 1000, 2500, 5000, 10000], '$/b/m':['$58.50', '$57.50', '$55.00', '$52.50', '$50.00', '$47.50', '$45.00']})
+vh_tiers_df = pd.DataFrame({'Bed Count':[1, 100, 250, 500, 1000, 2500], '$/b/m':['$65.00', '$60.00', '$57.50', '$55.00', '$52.50', '$50.00']})
 vh_tiers_df['empty'] = [''] * len(vh_tiers_df)
 vh_tiers_df = vh_tiers_df.set_index('empty')
 with st.sidebar:
@@ -145,7 +143,7 @@ with st.sidebar:
 
         st.markdown("### Beacons")       
         beacon_cost_competitor = st.slider("Cost of a single beacon", 1.0, 100.0, 31.0, 0.5, format="$%f")
-        num_months_beacon_life = st.slider("# of months until beacon replacement", 1, 60, 12, help="VisibleHand replaces all non-working beacons for free.")        
+        num_months_beacon_life = 12 #st.slider("# of months until beacon replacement", 1, 60, 12, help="VisibleHand replaces all non-working beacons for free.")        
         loss_rate_per_month_beacons = st.slider("Average percent of beacons lost per month", 0, 50, 0, format="%f", help="Beacons have a large 'unplanned cost' potential if not managed well. We created a 'beacon tracker' module to help facilities better manage their loss rate to reduce costs.  In our experience, the loss rate is 10-30% depending on the facility's process control.")  
 
         beacon_cost_competitor_pbpm = (1-(loss_rate_per_month_beacons/100)) ** num_months_beacon_life * (beacon_cost_competitor / num_months_beacon_life) + (beacon_cost_competitor * (loss_rate_per_month_beacons/100))
@@ -246,7 +244,15 @@ with st.sidebar:
 # Add startup costs to standard pbpm costs
 tot_base_cost_competitor_pbpm = avg_base_subscription_cost_competitor
 tot_band_cost_competitor_pbpm = band_cost_competitor_pbpm
-tot_beacon_cost_competitor_pbpm = beacon_cost_competitor_pbpm * (max(0,12-num_months_beacon_life)/12) + beacon_startup_cost_competitor_pbpm
+
+print(" ")
+print("-----")
+print(f"Just before doing the final calcs, I see beacon cost as {beacon_cost_competitor_pbpm}")
+print((max(0,12-num_months_beacon_life)/12))
+print("-----")
+
+#tot_beacon_cost_competitor_pbpm = beacon_cost_competitor_pbpm * (max(0,12-num_months_beacon_life)/12) + beacon_startup_cost_competitor_pbpm
+tot_beacon_cost_competitor_pbpm = beacon_cost_competitor_pbpm + beacon_startup_cost_competitor_pbpm
 # tot_device_cost_competitor_pbpm = devices_startup_cost_competitor_pbpm
 tot_cell_cost_competitor_pbpm = cellular_cost_competitor_pbpm
 tot_mdm_cost_competitor_pbpm = mdm_cost_competitor_pbpm
@@ -335,7 +341,7 @@ main_figure_placeholder.plotly_chart(fig_summary, config=config, use_container_w
 #----------------------------------------------------------------------------------------------------------------
 # Do the cumulative calcs and plot
 #----------------------------------------------------------------------------------------------------------------
-num_facs_for_rollout = 198
+num_facs_for_rollout = 198 #num_facs
 monthDFs = []
 newFacsMonth = max(round(num_facs_for_rollout/24),1)
 wearablesCompPerFac = (band_cost_competitor_pbpm + beacon_cost_competitor_pbpm) * adc  
