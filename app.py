@@ -245,12 +245,6 @@ with st.sidebar:
 tot_base_cost_competitor_pbpm = avg_base_subscription_cost_competitor
 tot_band_cost_competitor_pbpm = band_cost_competitor_pbpm
 
-print(" ")
-print("-----")
-print(f"Just before doing the final calcs, I see beacon cost as {beacon_cost_competitor_pbpm}")
-print((max(0,12-num_months_beacon_life)/12))
-print("-----")
-
 #tot_beacon_cost_competitor_pbpm = beacon_cost_competitor_pbpm * (max(0,12-num_months_beacon_life)/12) + beacon_startup_cost_competitor_pbpm
 tot_beacon_cost_competitor_pbpm = beacon_cost_competitor_pbpm + beacon_startup_cost_competitor_pbpm
 # tot_device_cost_competitor_pbpm = devices_startup_cost_competitor_pbpm
@@ -348,13 +342,6 @@ wearablesCompPerFac = (band_cost_competitor_pbpm + beacon_cost_competitor_pbpm) 
 deviceCompPerFac = (cellular_cost_competitor_pbpm + mdm_cost_competitor_pbpm ) * adc
 installCompPerFac = beacon_cost_competitor * adc + (adc / beds_to_device_ratio) * avg_device_cost_competitor + install_cost_competitor
 installVH = 275 * adc/beds_to_device_ratio
-
-# print( f"""deviceCompPerFac ${deviceCompPerFac:,.0f},
-#       wearablesCompPerFac ${wearablesCompPerFac:,.0f},
-#       installCompPerFac ${installCompPerFac:,.0f},
-#       installVH ${installVH:,.0f}
-#       """
-#       )
 
 for month in range(1,5*12):
     
