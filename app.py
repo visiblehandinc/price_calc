@@ -58,7 +58,7 @@ with fc3:
 #----------------------------------------------------------------------------------------------------------------
 with st.sidebar:
     with st.expander("Facility Info"):
-        adc = st.slider("Average Daily Census", 50, 120, 85)
+        adc = st.slider("Average Daily Census", 10, 120, 85)
         los = st.slider("Average length of stay", 1, 60, 5)
 
 #----------------------------------------------------------------------------------------------------------------
@@ -211,7 +211,7 @@ with st.sidebar:
         st.markdown("### Competitor")
         beacon_startup_cost_competitor = 1.3 * beacon_cost_competitor * num_beds
         devices_startup_cost_competitor = (num_beds / beds_to_device_ratio) * avg_device_cost_competitor
-        install_cost_competitor = st.slider("Install Cost", 0, 5000, 2500, 100, format="$%d")
+        install_cost_competitor = st.slider("Install Cost", 0, 10000, 2500, 100, format="$%d")
         total_upfront_costs_competitor = devices_startup_cost_competitor + (install_cost_competitor * num_facs)
         
         beacon_startup_cost_competitor_pbpm = beacon_startup_cost_competitor / (adc * 12 * num_facs)
