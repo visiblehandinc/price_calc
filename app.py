@@ -95,12 +95,14 @@ avg_base_subscription_cost_competitor = competitor_costs_df['Subscription Cost']
 num_beds = num_facs * adc
 
 vh_price = 45
-if num_beds < 250:
-    vh_price = 58.5
+if num_beds < 100:
+    vh_price = 65.0
+elif num_beds < 250:
+    vh_price = 60.0
 elif num_beds < 500:
     vh_price = 57.5
 elif num_beds < 1000:
-    vh_price = 55
+    vh_price = 55.0
 elif num_beds < 2500:
     vh_price = 52.5
 elif num_beds < 5000:
@@ -110,7 +112,8 @@ elif num_beds < 10000:
 else:
     vh_price = 45
 
-vh_tiers_df = pd.DataFrame({'Bed Count':[1, 250, 500, 1000, 2500, 5000, 10000], '$/b/m':['$58.50', '$57.50', '$55.00', '$52.50', '$50.00', '$47.50', '$45.00']})
+vh_tiers_df = pd.DataFrame({'Bed Count':[1, 100, 250, 500, 1000, 2500, 5000, 10000],
+                            '$/b/m':['$65.00', '$60.00','$57.50', '$55.00', '$52.50', '$50.00', '$47.50', '$45.00']})
 vh_tiers_df['empty'] = [''] * len(vh_tiers_df)
 vh_tiers_df = vh_tiers_df.set_index('empty')
 with st.sidebar:
@@ -246,7 +249,8 @@ with st.sidebar:
 # Add startup costs to standard pbpm costs
 tot_base_cost_competitor_pbpm = avg_base_subscription_cost_competitor
 tot_band_cost_competitor_pbpm = band_cost_competitor_pbpm
-tot_beacon_cost_competitor_pbpm = beacon_cost_competitor_pbpm * (max(0,12-num_months_beacon_life)/12) + beacon_startup_cost_competitor_pbpm
+#tot_beacon_cost_competitor_pbpm = beacon_cost_competitor_pbpm * (max(0,12-num_months_beacon_life)/12) + beacon_startup_cost_competitor_pbpm
+tot_beacon_cost_competitor_pbpm = beacon_cost_competitor_pbpm + beacon_startup_cost_competitor_pbpm
 # tot_device_cost_competitor_pbpm = devices_startup_cost_competitor_pbpm
 tot_cell_cost_competitor_pbpm = cellular_cost_competitor_pbpm
 tot_mdm_cost_competitor_pbpm = mdm_cost_competitor_pbpm
