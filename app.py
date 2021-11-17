@@ -146,10 +146,10 @@ with st.sidebar:
         num_months_beacon_life = 12 #st.slider("# of months until beacon replacement", 1, 60, 12, help="VisibleHand replaces all non-working beacons for free.")        
         loss_rate_per_month_beacons = st.slider("Average percent of beacons lost per month", 0, 50, 0, format="%f", help="Beacons have a large 'unplanned cost' potential if not managed well. We created a 'beacon tracker' module to help facilities better manage their loss rate to reduce costs.  In our experience, the loss rate is 10-30% depending on the facility's process control.")  
 
-        beacon_cost_competitor_pbpm = (1-(loss_rate_per_month_beacons/100)) ** num_months_beacon_life * (beacon_cost_competitor / num_months_beacon_life) + (beacon_cost_competitor * (loss_rate_per_month_beacons/100))
+        beacon_cost_competitor_pbpm = loss_rate_per_month_beacons/100 * beacon_cost_competitor
         beacon_cost_vh_pbpm = loss_rate_per_month_beacons/100 * 25
-        st.write(f"Additional per bed cost (Competitor)= ${beacon_cost_competitor_pbpm:.2f}")
-        st.write(f"Additional per bed cost (VH)= ${beacon_cost_vh_pbpm:.2f}")
+        st.write(f"Additional per bed cost (Competitor) = ${beacon_cost_competitor_pbpm:.2f}")
+        st.write(f"Additional per bed cost (VH) = ${beacon_cost_vh_pbpm:.2f}")
 
 
 # add in the additional costs to the dfs
